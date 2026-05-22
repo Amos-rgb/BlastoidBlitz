@@ -11,14 +11,18 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private boolean[] pressedKeys;
     private BufferedImage background;
     private Timer timer;
+    private Player player1;
+    private Player player2;
     public DisplayPanel() {
         pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
+        player1 = new Player(100,100);
+        player1 = new Player(924,924);
         try {
             background = ImageIO.read(new File("src/background.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        timer = new Timer(10, this);
+        timer = new Timer(10,e -> updateGame());
         addMouseListener(this);
         addKeyListener(this);
         setFocusable(true);
@@ -75,6 +79,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     @Override
     public void mouseExited(MouseEvent e) {
+
+    }
+
+    public void updateGame() {
 
     }
 }
