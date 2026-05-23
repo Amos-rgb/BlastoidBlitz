@@ -1,19 +1,25 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
-public class Bomb {
-    public int x;
-    public int y;
+public class Bomb extends Space {
     private int countdown;
     private Player player;
-    public Bomb(int x, int y, Player player) {
-        this.x = x;
-        this.y = y;
+    public Bomb(Player player) {
+        super(player.x,player.y);
+        collision = false;
+        try {
+            sprite = ImageIO.read(new File("src/bomb.png"));
+        } catch (IOException e) {
+            System.out.println("File not found!");
+        }
         this.player = player;
         countdown = 125;
     }
     public Rectangle explosion() {
         if (countdown == 0) return new Rectangle(x-64,y-64,192,192);
         countdown--;
-        return new Rectangle(-1,-1,0,0);
+        return null;
     }
 }

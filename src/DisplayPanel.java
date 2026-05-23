@@ -13,16 +13,33 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private Timer timer;
     private Player player1;
     private Player player2;
+    private ArrayList<Space> spaces;
+    private ArrayList<Bomb> bombs;
     public DisplayPanel() {
-        pressedKeys = new boolean[128]; // 128 keys on keyboard, max keycode is 127
-        player1 = new Player(100,100);
-        player1 = new Player(924,924);
+        pressedKeys = new boolean[128];
+        player1 = new Player(0,0);
+        player2 = new Player(960,960);
+        spaces = new ArrayList<>();
+        spaces.add(player1);
+        spaces.add(player2);
+        bombs = new ArrayList<>();
+        for (int i = 0; i < 64; i++) {
+            int x = (int) (Math.random()*16)*64;
+            int y = (int) (Math.random()*16)*64;
+            boolean validSpace = true;
+            for (Space space : spaces) {
+                if (space.x == x && space.y == y) {
+                    validSpace = false;
+                }
+            }
+            if (validSpace) spaces.add(new Immovable(x,y));
+        }
         try {
             background = ImageIO.read(new File("src/background.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        timer = new Timer(10,e -> updateGame());
+        timer = new Timer(24,e -> updateGame());
         addMouseListener(this);
         addKeyListener(this);
         setFocusable(true);
@@ -34,6 +51,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, null);
+        for (Space space : spaces) space.drawSpace(g);
 
     }
 
@@ -49,12 +67,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        pressedKeys[e.getKeyCode()] = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        pressedKeys[e.getKeyCode()] = false;
     }
 
     @Override
@@ -82,7 +100,59 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     }
 
-    public void updateGame() {
+    private void movePlayers() {
+        // player1
+        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-64);}
 
+        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-64,0);}
+
+        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,64);}
+
+        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,64,0);}
+
+        if (pressedKeys[KeyEvent.VK_Q]) {spaces.add(new Bomb(player1));}
+        // player2
+        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-64);}
+
+        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-64,0);}
+
+        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,64);}
+
+        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,64,0);}
+
+        if (pressedKeys[KeyEvent.VK_SLASH]) {spaces.add(new Bomb(player2));}
+    }
+
+    public void updateGame() {
+        movePlayers();
+        repaint();
+    }
+
+    public void movePlayer(Player player, int x, int y) {
+        player.x += x;
+        player.y += y;
+        if (player.x < 0 || player.x > 960 || player.y < 0 || player.y > 960) {
+            player.x -= x;
+            player.y -= y;
+            return;
+        }
+        for (Space space : spaces) {
+            if (player != space && player.x == space.x && player.y == space.y) {
+                if (space.collision) {
+                    player.x -= x;
+                    player.y -= y;
+                    return;
+                }
+            }
+        }
+    }
+
+    public void checkForExplosions() {
+        for (Bomb bomb : bombs) {
+            Rectangle explosionRect = bomb.explosion();
+            if (explosionRect != null) {
+
+            }
+        }
     }
 }

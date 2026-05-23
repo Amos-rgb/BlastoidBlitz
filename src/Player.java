@@ -1,21 +1,22 @@
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-public class Player {
-    public int x;
-    public int y;;
+public class Player extends Space {
     private int maxHealth;
     private int health;
     private int score;
-    private BufferedImage sprite;
     public Player(int x, int y) {
-        this.x = x;
-        this.y = y;
+        super(x,y);
+        collision = true;
+        try {
+            sprite = ImageIO.read(new File("src/sea cucumber.png"));
+        } catch (IOException e) {
+            System.out.println("File not found!");
+        }
         maxHealth = 1;
         health = maxHealth;
         score = 0;
-    }
-
-    public void placeBomb() {
-
     }
 }
