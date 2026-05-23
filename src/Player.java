@@ -11,7 +11,7 @@ public class Player extends Space {
         super(x,y);
         collision = true;
         try {
-            sprite = ImageIO.read(new File("src/sea cucumber.png"));
+            sprite = ImageIO.read(new File("src/sprites/sea cucumber.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }

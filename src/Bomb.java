@@ -10,16 +10,18 @@ public class Bomb extends Space {
         super(player.x,player.y);
         collision = false;
         try {
-            sprite = ImageIO.read(new File("src/bomb.png"));
+            sprite = ImageIO.read(new File("src/sprites/bomb.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
         this.player = player;
         countdown = 125;
     }
-    public Rectangle explosion() {
-        if (countdown == 0) return new Rectangle(x-64,y-64,192,192);
+
+    @Override
+    public boolean canExplode() {
+        if (countdown == 0) return true;
         countdown--;
-        return null;
+        return false;
     }
 }

@@ -15,4 +15,6 @@ public class Space {
     public void drawSpace(Graphics g) {
         g.drawImage(sprite,x,y, null);
     }
+
+    public boolean canExplode() { return false; }
 }

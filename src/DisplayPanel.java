@@ -14,7 +14,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private Player player1;
     private Player player2;
     private ArrayList<Space> spaces;
-    private ArrayList<Bomb> bombs;
     public DisplayPanel() {
         pressedKeys = new boolean[128];
         player1 = new Player(0,0);
@@ -22,7 +21,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         spaces = new ArrayList<>();
         spaces.add(player1);
         spaces.add(player2);
-        bombs = new ArrayList<>();
         for (int i = 0; i < 64; i++) {
             int x = (int) (Math.random()*16)*64;
             int y = (int) (Math.random()*16)*64;
@@ -35,7 +33,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (validSpace) spaces.add(new Immovable(x,y));
         }
         try {
-            background = ImageIO.read(new File("src/background.png"));
+            background = ImageIO.read(new File("src/sprites/background.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -125,6 +123,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public void updateGame() {
         movePlayers();
+        checkForExplosions();
         repaint();
     }
 
@@ -148,9 +147,14 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkForExplosions() {
-        for (Bomb bomb : bombs) {
-            Rectangle explosionRect = bomb.explosion();
-            if (explosionRect != null) {
+        for (int i = 0; i < spaces.size(); i++) {
+            Space space = spaces.get(i);
+            if (space.canExplode()) {
+                for (int x = -64; x <= 64; x += 64) {
+                    for (int y = -64; y <= 64; y += 64) {
+                        spaces.add(new Explosion(space.x+x,space.y+y));
+                    }
+                }
 
             }
         }
