@@ -1,6 +1,7 @@
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,8 +18,8 @@ public class Main {
         JLabel label = new JLabel("Blastoid Blitz");
         titleScreen.add(button);
         titleScreen.add(label);
-        titleScreen.setVisible(true); */
-        try {
+        titleScreen.setVisible(true); */ //Unfinished attempt at implementing title screen
+        try { //Plays audio
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/test.wav"));
             Clip clip = AudioSystem.getClip();
             clip.open(audio);

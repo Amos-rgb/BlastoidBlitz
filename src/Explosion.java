@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class Explosion extends Space {
-    public Explosion(int x, int y) {
+    private int countdown;
+    private Player player;
+    public Explosion(int x, int y, Player player) {
         super(x,y);
         collision = false;
         try {
@@ -12,5 +14,17 @@ public class Explosion extends Space {
         } catch (IOException e) {
             System.out.println("File not found!");
         }
+        countdown = 25; //0.6secs
+        this.player = player;
+    }
+
+    public boolean canDisappear() {
+        if (countdown == 0) return true;
+        countdown--;
+        return false;
+    }
+
+    public boolean canDealDamage() {
+        return countdown == 25;
     }
 }

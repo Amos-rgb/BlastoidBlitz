@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class Bomb extends Space {
     private int countdown;
-    private Player player;
+    Player player;
     public Bomb(Player player) {
         super(player.x,player.y);
         collision = false;
@@ -15,13 +15,16 @@ public class Bomb extends Space {
             System.out.println("File not found!");
         }
         this.player = player;
-        countdown = 125;
+        countdown = 125; //3secs
     }
 
-    @Override
     public boolean canExplode() {
         if (countdown == 0) return true;
         countdown--;
         return false;
+    }
+
+    public void detonate() {
+        countdown = 0;
     }
 }
