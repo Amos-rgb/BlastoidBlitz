@@ -9,6 +9,7 @@ public class Explosion extends Space {
     public Explosion(int x, int y, Player player) {
         super(x,y);
         collision = false;
+        destroyable = false;
         try {
             sprite = ImageIO.read(new File("src/sprites/wooden plank.png"));
         } catch (IOException e) {

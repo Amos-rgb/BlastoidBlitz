@@ -13,36 +13,19 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private Timer timer;
     private Player player1;
     private Player player2;
-    private ArrayList<Space> spaces;
+    public ArrayList<Space> spaces;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
-    public static Space[][] GameBoard;
 
     public DisplayPanel() throws IOException {
-        GameBoard = new Space[16][16];
         pressedKeys = new boolean[128];
-        player1 = new Player(0,0); //Creates player1 in the upper left corner
+        player1 = new Player(64,64); //Creates player1 in the upper left corner
         player2 = new Player(960,960); //Creates player2 in the lower right corner
         spaces = new ArrayList<>();
         spaces.add(player1);
         spaces.add(player2);
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
-
-        for (Space[] Each : GameBoard){
-            for (Space each : Each){
-                if (each.isBlock){
-                    if (each.destroyable){
-                        BufferedImage temp = ImageIO.read(new File("src/sprites/obstacle-Rock.png"));
-                        //to be implement
-                    }else{
-
-                    }
-                }else{
-
-                }
-            }
-        }
         try {
             background = ImageIO.read(new File("src/sprites/background.png"));
         } catch (IOException e) {
@@ -97,24 +80,25 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
+        int moveAmount = 16;
         // player1
-        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-16);}
+        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-16,0);}
+        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,16);}
+        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,16,0);}
+        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,moveAmount,0);}
 
         if (pressedKeys[KeyEvent.VK_Q]) {bombs.add(new Bomb(player1));}
         // player2
-        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-16);}
+        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-16,0);}
+        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,16);}
+        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,16,0);}
+        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,moveAmount,0);}
 
         if (pressedKeys[KeyEvent.VK_SLASH]) {bombs.add(new Bomb(player2));}
     }
@@ -127,14 +111,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void movePlayer(Player player, int x, int y) {
-        player.x += x; //Moves the selected player by the desired amount
-        player.y += y;
-
+        player.bounds.x += x; //Moves the selected player by the desired amount
+        player.bounds.y += y;
         for (Space space : spaces) {
-            if (player != space && player.x == space.x && player.y == space.y) { //If the player is entering a space with collision, returns to original position
+            if (player != space && player.bounds.intersects(space.bounds)) { //If the player is entering a space with collision, returns to original position
                 if (space.collision) {
-                    player.x -= x;
-                    player.y -= y;
+                    player.bounds.x -= x;
+                    player.bounds.y -= y;
                     return;
                 }
             }
@@ -147,7 +130,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
                 for (int x = -64; x <= 64; x += 64) {
                     for (int y = -64; y <= 64; y += 64) {
-                        explosions.add(new Explosion(bomb.x+x,bomb.y+y, bomb.player)); //Creates 9 explosions in a square around the exploded bomb
+                        explosions.add(new Explosion(bomb.bounds.x+x,bomb.bounds.y+y, bomb.player)); //Creates 9 explosions in a square around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
@@ -160,14 +143,14 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (explosion.canDealDamage()) { //Checks if an explosion has just been created, and therefore can deal damage
                 for (int j = 0; j < bombs.size(); j++) { //Checks all bombs to see if they are on the same space as the explosion
                     Bomb bomb = bombs.get(j);
-                    if (explosion.x == bomb.x && explosion.y == bomb.y) bomb.detonate(); //If the bomb is hit by the explosion, it explodes immediately
+                    if (explosion.bounds.intersects(bomb.bounds)) bomb.detonate(); //If the bomb is hit by the explosion, it explodes immediately
                 }
                 for (int j = 0; j < spaces.size(); j++) {
                     Space space = spaces.get(j);
-                    if (explosion.x == space.x && explosion.y == space.y) { //Checks all spaces to see if they are on the same space as the explosion
+                    if (explosion.bounds.intersects(space.bounds)) { //Checks all spaces to see if they are on the same space as the explosion
                         if (space.getClass() == Player.class) {
                             ((Player) space).damage(); //If the space is a player, damages them
-                        } else {
+                        } else if (space.destroyable){
                             spaces.remove(space); //Otherwise, removes the space
                         }
                     }

@@ -27,8 +27,8 @@ public class Player extends Space {
         health--;
         if (health == 0) {
             health = maxHealth;
-            x = START_X;
-            y = START_Y;
+            bounds.x = START_X;
+            bounds.y = START_Y;
         }
     }
 }

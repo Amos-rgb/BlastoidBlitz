@@ -7,7 +7,7 @@ public class Bomb extends Space {
     private int countdown;
     Player player;
     public Bomb(Player player) {
-        super(player.x,player.y);
+        super(player.bounds.x/64*64,player.bounds.y/64*64);
         collision = false;
         try {
             sprite = ImageIO.read(new File("src/sprites/bomb.png"));
