@@ -19,26 +19,21 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public static Space[][] GameBoard;
 
     public DisplayPanel() throws IOException {
-
-
-
-
-
-
+        GameBoard = new Space[16][16];
         pressedKeys = new boolean[128];
-        player1 = new Player(GameBoard[0][0].getX(),GameBoard[0][0].getY()); //Creates player1 in the upper left corner
-        player2 = new Player(GameBoard[15][15].getX(),GameBoard[15][15].getY()); //Creates player2 in the lower right corner
+        player1 = new Player(0,0); //Creates player1 in the upper left corner
+        player2 = new Player(960,960); //Creates player2 in the lower right corner
         spaces = new ArrayList<>();
         spaces.add(player1);
         spaces.add(player2);
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
+
         for (Space[] Each : GameBoard){
             for (Space each : Each){
                 if (each.isBlock){
                     if (each.destroyable){
                         BufferedImage temp = ImageIO.read(new File("src/sprites/obstacle-Rock.png"));
-//HHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLLLLLLLLLLLLLPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
                         //to be implement
                     }else{
 

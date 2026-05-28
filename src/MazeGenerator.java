@@ -97,7 +97,7 @@ public class MazeGenerator {
                 }else{
                     breakable = true;
                 }
-                DisplayPanel.GameBoard[x][y] = new Space(x*64, (x+1)*64, y*64, (y+1)*64,breakable);
+                DisplayPanel.GameBoard[x][y] = new Space(x,y);
                 System.out.print(map[y][x]);
             }
             System.out.println();

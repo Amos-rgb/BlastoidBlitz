@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         /*
         JFrame titleScreen = new JFrame("Title Screen");
         titleScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

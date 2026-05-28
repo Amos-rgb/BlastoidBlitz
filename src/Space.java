@@ -15,34 +15,9 @@ public class Space {
     public boolean destroyable;
     public boolean isBlock;
 
-    public Space (int X1, int X2, int Y1, int Y2, boolean destroyable){
-        this.isBlock = true;
-        this.destroyable = destroyable;
-        if (isBlock) {
-            if (X1 > X2) {
-                leftBound = X2;
-                rightBound = X1;
-            } else {
-                leftBound = X1;
-                rightBound = X2;
-            }
-            if (Y1 > Y2) {
-                UpBound = Y2;
-                bottomBound = Y1;
-            } else {
-                UpBound = Y1;
-                bottomBound = Y2;
-            }
-            this.x = (X1 + X2) / 2;
-            this.y = (Y1 + Y2) / 2;
-        }else{
-            System.out.println("error, bad code");
-        }
-
-    }
     public Space (int x, int y){
-        isBlock = false;
-
+        this.x = x;
+        this.y = y;
     }
 
 
