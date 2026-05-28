@@ -17,9 +17,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
     private Space[][] GameBoard;
-    private Space[][] GenerateBoard;
+    public static Space[][] GenerateBoard;
 
     public DisplayPanel() {
+
+
+
+
+
+
         pressedKeys = new boolean[128];
         player1 = new Player(0,0); //Creates player1 in the upper left corner
         player2 = new Player(960,960); //Creates player2 in the lower right corner
@@ -175,3 +181,4 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         }
     }
 }
+

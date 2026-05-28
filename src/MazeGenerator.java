@@ -91,6 +91,7 @@ public class MazeGenerator {
 
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLS; x++) {
+                DisplayPanel.GenerateBoard[x][y] = map
                 System.out.print(map[y][x]);
             }
             System.out.println();
