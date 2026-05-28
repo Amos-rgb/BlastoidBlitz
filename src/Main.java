@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
@@ -18,11 +19,10 @@ public class Main {
         button.addActionListener(e -> startGame());
         JLabel label = new JLabel("Blastoid Blitz");
         titleScreen.add(label);
-        label.setFont(new Font("Comic Sans", Font.BOLD,50));
+        label.setFont(new Font("Comic Sans", Font.BOLD,40));
         label.setForeground(Color.BLACK);
-        label.setHorizontalAlignment(SwingConstants.LEFT);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setLocation(64,64);
-        System.out.println(label.getX());
 
     }
     public static void startGame() {

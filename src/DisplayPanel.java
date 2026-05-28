@@ -80,7 +80,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
-        int moveAmount = 16;
+        int moveAmount = 64;
         // player1
         if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-moveAmount);}
 
@@ -113,6 +113,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void movePlayer(Player player, int x, int y) {
         player.bounds.x += x; //Moves the selected player by the desired amount
         player.bounds.y += y;
+        for (Bomb bomb : bombs) {
+            if (player.bounds.intersects(bomb.bounds)) { //If the player is entering a space with collision, returns to original position
+                player.bounds.x -= x;
+                player.bounds.y -= y;
+                return;
+            }
+        }
         for (Space space : spaces) {
             if (player != space && player.bounds.intersects(space.bounds)) { //If the player is entering a space with collision, returns to original position
                 if (space.collision) {
