@@ -5,17 +5,19 @@ import java.util.ArrayList;
 public class Space {
     int x;
     int y;
+
     public boolean collision; //Whether the space should prevent a player from moving on to it (true for Players and Immovables, false for Bombs and Explosions)
     BufferedImage sprite;
     private int UpBound;
     private int bottomBound;
     private int leftBound;
     private int rightBound;
-    boolean destroyable;
-    boolean isBlock;
+    public boolean destroyable;
+    public boolean isBlock;
 
-    public Space (int X1, int X2, int Y1, int Y2){
+    public Space (int X1, int X2, int Y1, int Y2, boolean destroyable){
         this.isBlock = true;
+        this.destroyable = destroyable;
         if (isBlock) {
             if (X1 > X2) {
                 leftBound = X2;
@@ -36,6 +38,7 @@ public class Space {
         }else{
             System.out.println("error, bad code");
         }
+
     }
     public Space (int x, int y){
         isBlock = false;
@@ -79,4 +82,6 @@ public class Space {
         g.drawImage(sprite,x,y, null);
     }
     public boolean isDestroyable(){return destroyable;}
+    public int getX() {return x;}
+    public int getY() {return y;}
 }

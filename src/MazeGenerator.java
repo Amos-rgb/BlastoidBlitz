@@ -89,9 +89,15 @@ public class MazeGenerator {
 
         System.out.println("Tile Size = " + TILE_SIZE + " px");
 
+        boolean breakable = true;
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLS; x++) {
-                DisplayPanel.GenerateBoard[x][y] = map
+                if (map[x][y] == WALL){
+                    breakable = false;
+                }else{
+                    breakable = true;
+                }
+                DisplayPanel.GameBoard[x][y] = new Space(x*64, (x+1)*64, y*64, (y+1)*64,breakable);
                 System.out.print(map[y][x]);
             }
             System.out.println();

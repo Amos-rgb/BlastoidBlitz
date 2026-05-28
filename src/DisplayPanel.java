@@ -16,10 +16,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private ArrayList<Space> spaces;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
-    private Space[][] GameBoard;
-    public static Space[][] GenerateBoard;
+    public static Space[][] GameBoard;
 
-    public DisplayPanel() {
+    public DisplayPanel() throws IOException {
 
 
 
@@ -27,23 +26,27 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
 
         pressedKeys = new boolean[128];
-        player1 = new Player(0,0); //Creates player1 in the upper left corner
-        player2 = new Player(960,960); //Creates player2 in the lower right corner
+        player1 = new Player(GameBoard[0][0].getX(),GameBoard[0][0].getY()); //Creates player1 in the upper left corner
+        player2 = new Player(GameBoard[15][15].getX(),GameBoard[15][15].getY()); //Creates player2 in the lower right corner
         spaces = new ArrayList<>();
         spaces.add(player1);
         spaces.add(player2);
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
-        for (int i = 0; i < 64; i++) { //Creates up to 64 immovables in random spaces
-            int x = (int) (Math.random()*16)*64;
-            int y = (int) (Math.random()*16)*64;
-            boolean validSpace = true;
-            for (Space space : spaces) {
-                if (space.x == x && space.y == y) { //Checks to make sure the space is not already occupied
-                    validSpace = false;
+        for (Space[] Each : GameBoard){
+            for (Space each : Each){
+                if (each.isBlock){
+                    if (each.destroyable){
+                        BufferedImage temp = ImageIO.read(new File("src/sprites/obstacle-Rock.png"));
+//HHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLLLLLLLLLLLLLPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+                        //to be implement
+                    }else{
+
+                    }
+                }else{
+
                 }
             }
-            if (validSpace) spaces.add(new Immovable(x,y));
         }
         try {
             background = ImageIO.read(new File("src/sprites/background.png"));
