@@ -16,6 +16,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private ArrayList<Space> spaces;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
+    private Space[][] GameBoard;
+    private Space[][] GenerateBoard;
+
     public DisplayPanel() {
         pressedKeys = new boolean[128];
         player1 = new Player(0,0); //Creates player1 in the upper left corner
@@ -91,23 +94,23 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     private void movePlayers() {
         // player1
-        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-64);}
+        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-16);}
 
-        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-64,0);}
+        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-16,0);}
 
-        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,64);}
+        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,16);}
 
-        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,64,0);}
+        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,16,0);}
 
         if (pressedKeys[KeyEvent.VK_Q]) {bombs.add(new Bomb(player1));}
         // player2
-        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-64);}
+        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-16);}
 
-        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-64,0);}
+        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-16,0);}
 
-        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,64);}
+        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,16);}
 
-        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,64,0);}
+        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,16,0);}
 
         if (pressedKeys[KeyEvent.VK_SLASH]) {bombs.add(new Bomb(player2));}
     }
@@ -122,11 +125,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void movePlayer(Player player, int x, int y) {
         player.x += x; //Moves the selected player by the desired amount
         player.y += y;
-        if (player.x < 0 || player.x > 960 || player.y < 0 || player.y > 960) { //If the player is trying to move out of bounds, returns to original position
-            player.x -= x;
-            player.y -= y;
-            return;
-        }
+
         for (Space space : spaces) {
             if (player != space && player.x == space.x && player.y == space.y) { //If the player is entering a space with collision, returns to original position
                 if (space.collision) {
