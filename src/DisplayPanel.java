@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -27,7 +28,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            background = ImageIO.read(new File("src/sprites/background.png"));
+            background = ImageIO.read(new File("src/sprites2/sand.png"));
+            //background = ImageIO.read(new File("src/sprites/background.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
@@ -42,7 +44,11 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(background, 0, 0, null);
+        for (int i = 0; i < 17; i++) {
+            for (int j = 0; j < 17; j++) {
+                g.drawImage(background, i*64, j*64, null);
+            }
+        }
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
@@ -113,6 +119,14 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void movePlayer(Player player, int x, int y) {
         player.bounds.x += x; //Moves the selected player by the desired amount
         player.bounds.y += y;
+        try {
+            if (x > 0 || y > 0) player.sprite = ImageIO.read(new File("src/sprites2/johndown.png"));
+            if (x < 0 || y < 0) player.sprite = ImageIO.read(new File("src/sprites2/johnup.png"));
+        } catch (FileNotFoundException e) {
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         for (Bomb bomb : bombs) {
             if (player.bounds.intersects(bomb.bounds)) { //If the player is entering a space with collision, returns to original position
                 player.bounds.x -= x;

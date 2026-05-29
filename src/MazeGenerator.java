@@ -74,15 +74,15 @@ public class MazeGenerator {
         }
     }
 
-    private boolean isSpawnArea(int x, int y) {
-
+    private boolean isSpawnArea(int x, int y) { //Checks if a space is in or near the spawn area of either player
+        int spawnSize = 2; //A square of spawnSize radius in either corner. To be improved later
         // Player 1 spawn (top-left)
-        if ((x >= 0 && x <= 3) && (y >= 0 && y <= 3)) {
+        if ((x >= 1 && x <= spawnSize) && (y >= 1 && y <= spawnSize)) {
             return true;
         }
 
         // Player 2 spawn (bottom-right)
-        if ((x <= ROWS-1 && x >= ROWS-4) && (y <= COLS-1 && y >= COLS-4)) {
+        if ((x <= ROWS-2 && x >= ROWS-spawnSize-1) && (y <= COLS-2 && y >= COLS-spawnSize-1)) {
             return true;
         }
 

@@ -8,7 +8,8 @@ public class Indestructible extends Space {
         collision = true;
         destroyable = false;
         try {
-            sprite = ImageIO.read(new File("src/sprites/obstacle-Rock.png"));
+            sprite = ImageIO.read(new File("src/sprites2/rock.png"));
+            //sprite = ImageIO.read(new File("src/sprites/rock.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
