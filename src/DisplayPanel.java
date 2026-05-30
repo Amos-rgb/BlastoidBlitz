@@ -12,19 +12,17 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private boolean[] pressedKeys;
     private BufferedImage background;
     private Timer timer;
-    private Player player1;
-    private Player player2;
+    public Player[] players;
     public ArrayList<Space> spaces;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
 
     public DisplayPanel() throws IOException {
         pressedKeys = new boolean[128];
-        player1 = new Player(64,64); //Creates player1 in the upper left corner
-        player2 = new Player(960,960); //Creates player2 in the lower right corner
+        players = new Player[2];
+        players[0] = new Player(64,64); //Creates player 1 in the upper left corner
+        players[1] = new Player(960,960); //Creates player 2 in the lower right corner
         spaces = new ArrayList<>();
-        spaces.add(player1);
-        spaces.add(player2);
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
@@ -49,6 +47,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 g.drawImage(background, i*64, j*64, null);
             }
         }
+        for (Player player : players) player.drawSpace(g);
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
@@ -86,30 +85,32 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
+        for (Player player : players) player.reduceImmunity();
         int moveAmount = 64;
-        // player1
-        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(player1,0,-moveAmount);}
+        // player 1
+        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(players[0],0,-moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(player1,-moveAmount,0);}
+        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(players[0],-moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(player1,0,moveAmount);}
+        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(players[0],0,moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(player1,moveAmount,0);}
+        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(players[0],moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_Q]) {bombs.add(new Bomb(player1));}
-        // player2
-        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(player2,0,-moveAmount);}
+        if (pressedKeys[KeyEvent.VK_Q]) {bombs.add(new Bomb(players[0]));}
+        // player 2
+        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(players[1],0,-moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(player2,-moveAmount,0);}
+        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(players[1],-moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(player2,0,moveAmount);}
+        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(players[1],0,moveAmount);}
 
-        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(player2,moveAmount,0);}
+        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(players[1],moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_SLASH]) {bombs.add(new Bomb(player2));}
+        if (pressedKeys[KeyEvent.VK_SLASH]) {bombs.add(new Bomb(players[1]));}
     }
 
     public void updateGame() {
+        System.out.println("Score: " + players[0].getScore() + "-" + players[1].getScore() + " | Health: " + players[0].getHealth() + "/" + players[0].getMaxHealth() + "-" + players[0].getHealth() + "/" + players[0].getMaxHealth());
         movePlayers();
         checkExplosions();
         checkBombs();
@@ -151,7 +152,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
                 for (int x = -64; x <= 64; x += 64) {
                     for (int y = -64; y <= 64; y += 64) {
-                        explosions.add(new Explosion(bomb.bounds.x+x,bomb.bounds.y+y, bomb.player)); //Creates 9 explosions in a square around the exploded bomb
+                        explosions.add(new Explosion(bomb.bounds.x+x,bomb.bounds.y+y, bomb.getPlayer())); //Creates 9 explosions in a square around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
@@ -169,12 +170,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (int j = 0; j < spaces.size(); j++) {
                     Space space = spaces.get(j);
                     if (explosion.bounds.intersects(space.bounds)) { //Checks all spaces to see if they are on the same space as the explosion
-                        if (space.getClass() == Player.class) {
-                            ((Player) space).damage(); //If the space is a player, damages them
-                        } else if (space.destroyable){
+                        if (space.destroyable){
                             spaces.remove(space); //Otherwise, removes the space
                         }
                     }
+                }
+                for (Player player : players) {
+                    if (player.bounds.intersects(explosion.bounds))
+                        if (player.damage() && player != explosion.getPlayer())
+                            explosion.getPlayer().addScore();
                 }
             }
             if (explosion.canDisappear()) { //Checks all explosions to see if their countdown has finished

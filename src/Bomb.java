@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class Bomb extends Space {
     private int countdown;
-    Player player;
+    private Player player;
     public Bomb(Player player) {
         super(player.bounds.x/64*64,player.bounds.y/64*64);
         collision = true;
@@ -27,5 +27,7 @@ public class Bomb extends Space {
 
     public void detonate() {
         countdown = 0;
-    }
+    } //Causes bomb to explode the next time canExplode() is called
+
+    public Player getPlayer() {return player;}
 }

@@ -16,8 +16,8 @@ public class Explosion extends Space {
         } catch (IOException e) {
             System.out.println("File not found!");
         }
-        countdown = 25; //0.6secs
         this.player = player;
+        countdown = 25; //0.6secs
     }
 
     public boolean canDisappear() {
@@ -27,6 +27,8 @@ public class Explosion extends Space {
     }
 
     public boolean canDealDamage() {
-        return countdown == 25;
+        return countdown == 24;
     }
+
+    public Player getPlayer() {return player;}
 }
