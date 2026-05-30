@@ -11,7 +11,7 @@ public class Explosion extends Space {
         collision = false;
         destroyable = false;
         try {
-            sprite = ImageIO.read(new File("src/sprites2/explosion.png"));
+            sprite = ImageIO.read(new File("src/realisticPack/explosion.png"));
             //sprite = ImageIO.read(new File("src/sprites/wood.png"));
         } catch (IOException e) {
             System.out.println("File not found!");

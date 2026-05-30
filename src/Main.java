@@ -7,22 +7,18 @@ import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         JFrame titleScreen = new JFrame("Title Screen");
         titleScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        titleScreen.setSize(512, 512);
+        titleScreen.setSize(384, 320);
         titleScreen.setLocationRelativeTo(null);
         titleScreen.setVisible(true); //Unfinished attempt at implementing title screen
         JButton button = new JButton("Play");
         titleScreen.add(button);
-        button.setBounds(128,256,256,64);
+        button.setBounds(64,192,256,64);
         button.addActionListener(e -> startGame());
-        JLabel label = new JLabel("Blastoid Blitz");
-        titleScreen.add(label);
-        label.setFont(new Font("Comic Sans", Font.BOLD,40));
-        label.setForeground(Color.BLACK);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setLocation(64,64);
+        JLabel label = new JLabel(new ImageIcon("src/sprites/title.png"));
+        label.getIcon().paintIcon(titleScreen, titleScreen.getGraphics(), 64, 64);
 
     }
     public static void startGame() {

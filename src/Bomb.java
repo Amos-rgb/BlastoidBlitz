@@ -10,7 +10,7 @@ public class Bomb extends Space {
         super(player.bounds.x/64*64,player.bounds.y/64*64);
         collision = true;
         try {
-            sprite = ImageIO.read(new File("src/sprites2/dynamite.png"));
+            sprite = ImageIO.read(new File("src/realisticPack/dynamite.png"));
             //sprite = ImageIO.read(new File("src/sprites/bomb.png"));
         } catch (IOException e) {
             System.out.println("File not found!");

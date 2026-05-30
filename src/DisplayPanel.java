@@ -28,7 +28,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            background = ImageIO.read(new File("src/sprites2/sand.png"));
+            background = ImageIO.read(new File("src/realisticPack/sand.png"));
             //background = ImageIO.read(new File("src/sprites/background.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
@@ -120,8 +120,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         player.bounds.x += x; //Moves the selected player by the desired amount
         player.bounds.y += y;
         try {
-            if (x > 0 || y > 0) player.sprite = ImageIO.read(new File("src/sprites2/johndown.png"));
-            if (x < 0 || y < 0) player.sprite = ImageIO.read(new File("src/sprites2/johnup.png"));
+            if (x > 0 || y > 0) player.sprite = ImageIO.read(new File("src/realisticPack/johndown.png"));
+            if (x < 0 || y < 0) player.sprite = ImageIO.read(new File("src/realisticPack/johnup.png"));
         } catch (FileNotFoundException e) {
 
         } catch (IOException e) {

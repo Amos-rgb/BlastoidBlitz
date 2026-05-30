@@ -8,7 +8,7 @@ public class Destructible extends Space {
         collision = true;
         destroyable = true;
         try {
-            sprite = ImageIO.read(new File("src/sprites2/barrel.png"));
+            sprite = ImageIO.read(new File("src/realisticPack/barrel.png"));
             //sprite = ImageIO.read(new File("src/sprites/wood.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
