@@ -9,10 +9,11 @@ public class SpawnArea extends Space {
         super(x,y);
         collision = false;
         destroyable = false;
-        sprites = new BufferedImage[2];
+        sprites = new BufferedImage[4];
         try {
-            sprites[0] = ImageIO.read(new File("src/sprites/kelp/kelp1.png"));
-            sprites[1] = ImageIO.read(new File("src/sprites/kelp/kelp2.png"));
+            for (int i = 0; i < 4; i++) {
+                sprites[i] = ImageIO.read(new File("src/sprites/kelp/kelp" + i + ".png"));
+            }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

@@ -27,7 +27,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            background = ImageIO.read(new File("src/realisticPack/sand.png"));
+            background = ImageIO.read(new File("src/sprites/sand.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
@@ -153,11 +153,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkBombs() {
+        int blastRadius = 1;
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
-                for (int x = bomb.bounds.x-64; x <= bomb.bounds.x+64; x += 64) {
-                    for (int y = bomb.bounds.y-64; y <= bomb.bounds.y+64; y += 64) {
+                for (int x = bomb.bounds.x-blastRadius*64; x <= bomb.bounds.x+blastRadius*64; x += 64) {
+                    for (int y = bomb.bounds.y-blastRadius*64; y <= bomb.bounds.y+blastRadius*64; y += 64) {
                         boolean isSpawnArea = false;
                         for (Space space : spaces) {
                             if (space.bounds.x == x && space.bounds.y == y && space.getClass() == SpawnArea.class) {isSpawnArea = true;}
