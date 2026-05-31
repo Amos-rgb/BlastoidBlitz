@@ -15,6 +15,7 @@ public class Player extends Space {
         START_X = x;
         START_Y = y;
         collision = true;
+        destroyable = false;
         sprites = new BufferedImage[2];
         try {
             sprites[0] = ImageIO.read(new File("src/realisticPack/johndown.png"));

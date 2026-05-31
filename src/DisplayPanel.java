@@ -26,7 +26,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            background = ImageIO.read(new File("src/sprites/background.png"));
+            background = ImageIO.read(new File("src/realisticPack/sand.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
@@ -166,11 +166,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 }
                 for (int j = 0; j < spaces.size(); j++) {
                     Space space = spaces.get(j);
-                    if (explosion.bounds.intersects(space.bounds)) { //Checks all spaces to see if they are on the same space as the explosion
-                        if (space.destroyable){
-                            spaces.remove(space); //Otherwise, removes the space
-                        }
-                    }
+                    if (explosion.bounds.intersects(space.bounds)) //Checks all spaces to see if they are on the same space as the explosion
+                        if (space.destroyable) spaces.remove(space); //Otherwise, removes the space
                 }
                 for (Player player : players) {
                     if (player.bounds.intersects(explosion.bounds))

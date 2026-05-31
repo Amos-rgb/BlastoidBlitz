@@ -12,7 +12,8 @@ public class MazeGenerator {
 
     // Tile types
     public static final char EMPTY = ' ';
-    public static final char SPAWN_AREA = '*';
+    public static final char SPAWN_AREA_1 = '1';
+    public static final char SPAWN_AREA_2 = '2';
     public static final char WALL = '#';
     public static final char BLOCK = '+';
 
@@ -47,50 +48,35 @@ public class MazeGenerator {
             map[y][COLS - 1] = WALL;
         }
 
+        for (int y = 1; y < 4; y++) {
+            for (int x = 1; x < 4; x++) {
+                map[y][x] = SPAWN_AREA_1;
+            }
+        }
+        for (int y = ROWS-2; y > ROWS-5; y--) {
+            for (int x = COLS-2; x > ROWS-5; x--) {
+                map[y][x] = SPAWN_AREA_2;
+            }
+        }
+
         // Indestructible walls
         for (int y = 2; y < ROWS - 1; y += 2) {
             for (int x = 2; x < COLS - 1; x += 2) {
-                map[y][x] = WALL;
+                if (map[y][x] == EMPTY) map[y][x] = WALL;
             }
         }
 
         // Random breakable blocks
         for (int y = 1; y < ROWS - 1; y++) {
             for (int x = 1; x < COLS - 1; x++) {
-
-                if (map[y][x] != EMPTY) {
-                    continue;
-                }
-
-                // Keep spawn areas clean
-                if (isSpawnArea(x, y)) {
-                    map[y][x] = SPAWN_AREA;
-                    continue;
-                }
-
                 // 65% chance block
-                if (random.nextDouble() < 0.65) {
-                    map[y][x] = BLOCK;
+                if (map[y][x] == EMPTY) {
+                    if (random.nextDouble() < 0.65) {
+                        map[y][x] = BLOCK;
+                    }
                 }
             }
         }
-    }
-
-    private boolean isSpawnArea(int x, int y) { //Checks if a space is in or near the spawn area of either player
-        int spawnSize = 3; //A square of spawnSize radius in either corner. To be improved later
-        // Player 1 spawn (top-left)
-        if (map[y][x] != EMPTY) return false;
-
-        if ((x >= 1 && x <= spawnSize) && (y >= 1 && y <= spawnSize)) {
-            return true;
-        }
-
-        // Player 2 spawn (bottom-right)
-        if ((x <= ROWS-2 && x >= ROWS-spawnSize-1) && (y <= COLS-2 && y >= COLS-spawnSize-1)) {
-            return true;
-        }
-
-        return false;
     }
 
     public void printMap(DisplayPanel panel) {
@@ -103,10 +89,10 @@ public class MazeGenerator {
                     panel.spaces.add(new Indestructible(x*TILE_SIZE,y*TILE_SIZE));
                 } else if (map[x][y] == BLOCK) {
                     panel.spaces.add(new Destructible(x*TILE_SIZE,y*TILE_SIZE));
-                } else if (map[x][y] == SPAWN_AREA) {
+                } else if (map[x][y] == SPAWN_AREA_1 || map[x][y] == SPAWN_AREA_2) {
                     panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,null));
                 }
-                System.out.print(map[y][x]);
+                System.out.print(map[y][x] + " ");
             }
             System.out.println();
         }
