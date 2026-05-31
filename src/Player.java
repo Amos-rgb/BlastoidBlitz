@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -62,4 +63,15 @@ public class Player extends Space {
     public int getxMoveAmount() {return xMoveAmount;}
 
     public int getyMoveAmount() {return yMoveAmount;}
+
+    @Override
+    public void drawSpace(Graphics g) {
+        if (frameCountdown == 0) {
+            frameCountdown = FRAME_WAIT_TIME;
+            frame++;
+            frame %= 2;
+        }
+        g.drawImage(sprites[frame],bounds.x,bounds.y, null);
+        frameCountdown--;
+    }
 }

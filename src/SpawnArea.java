@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class SpawnArea extends Space {
+public class SpawnArea extends Space { //Spawn area: space that prevents explosion and does not have collision for its assigned player
     private Player player;
     public SpawnArea(int x, int y, Player player) {
         super(x,y);
@@ -19,5 +19,9 @@ public class SpawnArea extends Space {
         }
         frame = 0;
         this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

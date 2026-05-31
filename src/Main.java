@@ -39,19 +39,15 @@ public class Main {
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
         }
-        try {
-            JFrame frame = new JFrame("Blastoid Blitz");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1088, 1088);
-            frame.setLocationRelativeTo(null);
-            DisplayPanel panel = new DisplayPanel();
-            MazeGenerator generator = new MazeGenerator(17, 17, 1088);
-            generator.generate();
-            generator.printMap(panel);
-            frame.add(panel);
-            frame.setVisible(true);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        JFrame frame = new JFrame("Blastoid Blitz");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1088, 1088);
+        frame.setLocationRelativeTo(null);
+        DisplayPanel panel = new DisplayPanel();
+        MazeGenerator generator = new MazeGenerator(17, 17, 1088);
+        generator.generate();
+        generator.printMap(panel);
+        frame.add(panel);
+        frame.setVisible(true);
     }
 }

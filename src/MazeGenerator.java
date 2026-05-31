@@ -42,17 +42,19 @@ public class MazeGenerator {
             map[0][x] = WALL;
             map[ROWS - 1][x] = WALL;
         }
-
         for (int y = 0; y < ROWS; y++) {
             map[y][0] = WALL;
             map[y][COLS - 1] = WALL;
         }
 
+        //Player 1 spawn area
         for (int y = 1; y < 4; y++) {
             for (int x = 1; x < 4; x++) {
                 map[y][x] = SPAWN_AREA_1;
             }
         }
+
+        //Player 2 spawn area
         for (int y = ROWS-2; y > ROWS-5; y--) {
             for (int x = COLS-2; x > ROWS-5; x--) {
                 map[y][x] = SPAWN_AREA_2;
@@ -89,8 +91,10 @@ public class MazeGenerator {
                     panel.spaces.add(new Indestructible(x*TILE_SIZE,y*TILE_SIZE));
                 } else if (map[x][y] == BLOCK) {
                     panel.spaces.add(new Destructible(x*TILE_SIZE,y*TILE_SIZE));
-                } else if (map[x][y] == SPAWN_AREA_1 || map[x][y] == SPAWN_AREA_2) {
-                    panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,null));
+                } else if (map[x][y] == SPAWN_AREA_1) {
+                    panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,panel.players[0]));
+                } else if (map[x][y] == SPAWN_AREA_2) {
+                    panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,panel.players[1]));
                 }
                 System.out.print(map[y][x] + " ");
             }
