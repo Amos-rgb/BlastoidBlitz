@@ -10,6 +10,8 @@ public class Player extends Space {
     private int health;
     private int score;
     private int immunity;
+    private int xMoveAmount;
+    private int yMoveAmount;
     public Player(int x, int y) {
         super(x,y);
         START_X = x;
@@ -52,4 +54,12 @@ public class Player extends Space {
     public int getHealth() {return health;}
 
     public int getMaxHealth() {return maxHealth;}
+
+    public void setxMoveAmount(int xMoveAmount) {this.xMoveAmount = xMoveAmount;}
+
+    public void setyMoveAmount(int yMoveAmount) {this.yMoveAmount = yMoveAmount;}
+
+    public int getxMoveAmount() {return xMoveAmount;}
+
+    public int getyMoveAmount() {return yMoveAmount;}
 }

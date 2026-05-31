@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     private boolean[] pressedKeys;
@@ -87,25 +88,35 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) player.reduceImmunity();
         int moveAmount = 16;
         // player 1
-        if (pressedKeys[KeyEvent.VK_W]) {movePlayer(players[0],0,-moveAmount);}
+        if (players[0].bounds.x % 64 == 0 && players[0].bounds.y % 64 == 0) {
+            players[0].setxMoveAmount(0);
+            players[0].setyMoveAmount(0);
+            if (pressedKeys[KeyEvent.VK_W]) players[0].setyMoveAmount(-moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_A]) {movePlayer(players[0],-moveAmount,0);}
+            if (pressedKeys[KeyEvent.VK_A]) players[0].setxMoveAmount(-moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_S]) {movePlayer(players[0],0,moveAmount);}
+            if (pressedKeys[KeyEvent.VK_S]) players[0].setyMoveAmount(moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_D]) {movePlayer(players[0],moveAmount,0);}
+            if (pressedKeys[KeyEvent.VK_D]) players[0].setxMoveAmount(moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_Q]) {addBomb(players[0]);}
+            if (pressedKeys[KeyEvent.VK_Q]) {addBomb(players[0]);}
+        }
+        movePlayer(players[0]);
         // player 2
-        if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(players[1],0,-moveAmount);}
+        if (players[1].bounds.x % 64 == 0 && players[1].bounds.y % 64 == 0) {
+            players[1].setxMoveAmount(0);
+            players[1].setyMoveAmount(0);
+            if (pressedKeys[KeyEvent.VK_UP]) players[1].setyMoveAmount(-moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_LEFT]) {movePlayer(players[1],-moveAmount,0);}
+            if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setxMoveAmount(-moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_DOWN]) {movePlayer(players[1],0,moveAmount);}
+            if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setyMoveAmount(moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(players[1],moveAmount,0);}
+            if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setxMoveAmount(moveAmount);
 
-        if (pressedKeys[KeyEvent.VK_SLASH]) {addBomb(players[1]);}
+            if (pressedKeys[KeyEvent.VK_SLASH]) {addBomb(players[1]);}
+        }
+        movePlayer(players[1]);
     }
 
     public void updateGame() {
@@ -115,7 +126,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         repaint();
     }
 
-    public void movePlayer(Player player, int x, int y) {
+    public void movePlayer(Player player) {
+        int x = player.getxMoveAmount();
+        int y = player.getyMoveAmount();
         player.bounds.x += x; //Moves the selected player by the desired amount
         player.bounds.y += y;
         for (Bomb bomb : bombs) {
