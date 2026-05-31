@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -7,11 +8,12 @@ public class Indestructible extends Space {
         super(x,y);
         collision = true;
         destroyable = false;
+        sprites = new BufferedImage[1];
         try {
-            sprite = ImageIO.read(new File("src/realisticPack/rock.png"));
-            //sprite = ImageIO.read(new File("src/sprites/rock.png"));
+            sprites[0] = ImageIO.read(new File("src/sprites/rock.png"));
         } catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
         }
+        frame = 0;
     }
 }

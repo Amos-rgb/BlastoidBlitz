@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -7,11 +8,12 @@ public class Destructible extends Space {
         super(x,y);
         collision = true;
         destroyable = true;
+        sprites = new BufferedImage[1];
         try {
-            sprite = ImageIO.read(new File("src/realisticPack/barrel.png"));
-            //sprite = ImageIO.read(new File("src/sprites/wood.png"));
+            sprites[0] = ImageIO.read(new File("src/sprites/wood.png"));
         } catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
         }
+        frame = 0;
     }
 }

@@ -12,6 +12,7 @@ public class MazeGenerator {
 
     // Tile types
     public static final char EMPTY = ' ';
+    public static final char SPAWN_AREA = '*';
     public static final char WALL = '#';
     public static final char BLOCK = '+';
 
@@ -63,6 +64,7 @@ public class MazeGenerator {
 
                 // Keep spawn areas clean
                 if (isSpawnArea(x, y)) {
+                    map[y][x] = SPAWN_AREA;
                     continue;
                 }
 
@@ -75,8 +77,10 @@ public class MazeGenerator {
     }
 
     private boolean isSpawnArea(int x, int y) { //Checks if a space is in or near the spawn area of either player
-        int spawnSize = 2; //A square of spawnSize radius in either corner. To be improved later
+        int spawnSize = 3; //A square of spawnSize radius in either corner. To be improved later
         // Player 1 spawn (top-left)
+        if (map[y][x] != EMPTY) return false;
+
         if ((x >= 1 && x <= spawnSize) && (y >= 1 && y <= spawnSize)) {
             return true;
         }
@@ -93,13 +97,14 @@ public class MazeGenerator {
 
         System.out.println("Tile Size = " + TILE_SIZE + " px");
 
-        boolean breakable = true;
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLS; x++) {
                 if (map[x][y] == WALL){
                     panel.spaces.add(new Indestructible(x*TILE_SIZE,y*TILE_SIZE));
                 } else if (map[x][y] == BLOCK) {
                     panel.spaces.add(new Destructible(x*TILE_SIZE,y*TILE_SIZE));
+                } else if (map[x][y] == SPAWN_AREA) {
+                    panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,null));
                 }
                 System.out.print(map[y][x]);
             }

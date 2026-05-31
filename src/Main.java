@@ -19,6 +19,14 @@ public class Main {
         button.addActionListener(e -> startGame());
         JLabel label = new JLabel(new ImageIcon("src/sprites/title.png"));
         label.getIcon().paintIcon(titleScreen, titleScreen.getGraphics(), 64, 64);
+        try {
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
     public static void startGame() {

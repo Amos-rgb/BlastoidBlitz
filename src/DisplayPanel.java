@@ -26,8 +26,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            background = ImageIO.read(new File("src/realisticPack/sand.png"));
-            //background = ImageIO.read(new File("src/sprites/background.png"));
+            background = ImageIO.read(new File("src/sprites/background.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
@@ -47,9 +46,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 g.drawImage(background, i*64, j*64, null);
             }
         }
-        for (Player player : players) player.drawSpace(g);
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
+        for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
     }
 
@@ -86,7 +85,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     private void movePlayers() {
         for (Player player : players) player.reduceImmunity();
-        int moveAmount = 64;
+        int moveAmount = 16;
         // player 1
         if (pressedKeys[KeyEvent.VK_W]) {movePlayer(players[0],0,-moveAmount);}
 
@@ -96,7 +95,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
         if (pressedKeys[KeyEvent.VK_D]) {movePlayer(players[0],moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_Q]) {bombs.add(new Bomb(players[0]));}
+        if (pressedKeys[KeyEvent.VK_Q]) {addBomb(players[0]);}
         // player 2
         if (pressedKeys[KeyEvent.VK_UP]) {movePlayer(players[1],0,-moveAmount);}
 
@@ -106,11 +105,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
         if (pressedKeys[KeyEvent.VK_RIGHT]) {movePlayer(players[1],moveAmount,0);}
 
-        if (pressedKeys[KeyEvent.VK_SLASH]) {bombs.add(new Bomb(players[1]));}
+        if (pressedKeys[KeyEvent.VK_SLASH]) {addBomb(players[1]);}
     }
 
     public void updateGame() {
-        System.out.println("Score: " + players[0].getScore() + "-" + players[1].getScore() + " | Health: " + players[0].getHealth() + "/" + players[0].getMaxHealth() + "-" + players[0].getHealth() + "/" + players[0].getMaxHealth());
         movePlayers();
         checkExplosions();
         checkBombs();
@@ -120,39 +118,38 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void movePlayer(Player player, int x, int y) {
         player.bounds.x += x; //Moves the selected player by the desired amount
         player.bounds.y += y;
-        try {
-            if (x > 0 || y > 0) player.sprite = ImageIO.read(new File("src/realisticPack/johndown.png"));
-            if (x < 0 || y < 0) player.sprite = ImageIO.read(new File("src/realisticPack/johnup.png"));
-        } catch (FileNotFoundException e) {
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         for (Bomb bomb : bombs) {
-            if (player.bounds.intersects(bomb.bounds)) { //If the player is entering a space with collision, returns to original position
+            if (bomb.collision && player.bounds.intersects(bomb.bounds)) { //If the player is entering a space with collision, returns to original position
                 player.bounds.x -= x;
                 player.bounds.y -= y;
                 return;
             }
         }
         for (Space space : spaces) {
-            if (player != space && player.bounds.intersects(space.bounds)) { //If the player is entering a space with collision, returns to original position
-                if (space.collision) {
-                    player.bounds.x -= x;
-                    player.bounds.y -= y;
-                    return;
-                }
+            if (space.collision && player.bounds.intersects(space.bounds)) { //If the player is entering a space with collision, returns to original position
+                player.bounds.x -= x;
+                player.bounds.y -= y;
+                return;
             }
         }
+    }
+
+    public void addBomb(Player player) {
+        for (Bomb bomb : bombs) if (bomb.bounds.intersects(player.bounds)) return;
+        bombs.add(new Bomb(player));
     }
 
     public void checkBombs() {
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
-                for (int x = -64; x <= 64; x += 64) {
-                    for (int y = -64; y <= 64; y += 64) {
-                        explosions.add(new Explosion(bomb.bounds.x+x,bomb.bounds.y+y, bomb.getPlayer())); //Creates 9 explosions in a square around the exploded bomb
+                for (int x = bomb.bounds.x-64; x <= bomb.bounds.x+64; x += 64) {
+                    for (int y = bomb.bounds.y-64; y <= bomb.bounds.y+64; y += 64) {
+                        boolean isSpawnArea = false;
+                        for (Space space : spaces) {
+                            if (space.bounds.x == x && space.bounds.y == y && space.getClass() == SpawnArea.class) {isSpawnArea = true;}
+                        }
+                        if (!isSpawnArea) explosions.add(new Explosion(x,y, bomb.getPlayer())); //Creates 9 explosions in a square around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb

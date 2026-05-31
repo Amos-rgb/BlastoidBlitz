@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -14,12 +15,14 @@ public class Player extends Space {
         START_X = x;
         START_Y = y;
         collision = true;
+        sprites = new BufferedImage[2];
         try {
-            sprite = ImageIO.read(new File("src/realisticPack/johndown.png"));
-            //sprite = ImageIO.read(new File("src/sprites/kelp.png"));
+            sprites[0] = ImageIO.read(new File("src/realisticPack/johndown.png"));
+            sprites[1] = ImageIO.read(new File("src/realisticPack/johnup.png"));
         } catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
         }
+        frame = 0;
         maxHealth = 1;
         health = maxHealth;
         score = 0;

@@ -10,12 +10,13 @@ public class Explosion extends Space {
         super(x,y);
         collision = false;
         destroyable = false;
+        sprites = new BufferedImage[1];
         try {
-            sprite = ImageIO.read(new File("src/realisticPack/explosion.png"));
-            //sprite = ImageIO.read(new File("src/sprites/wood.png"));
+            sprites[0] = ImageIO.read(new File("src/realisticPack/explosion.png"));
         } catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
         }
+        frame = 0;
         this.player = player;
         countdown = 25; //0.6secs
     }

@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -8,15 +9,18 @@ public class Bomb extends Space {
     private Player player;
     public Bomb(Player player) {
         super(player.bounds.x/64*64,player.bounds.y/64*64);
-        collision = true;
+        collision = false;
+        sprites = new BufferedImage[7];
         try {
-            sprite = ImageIO.read(new File("src/realisticPack/dynamite.png"));
-            //sprite = ImageIO.read(new File("src/sprites/bomb.png"));
+            for (int i = 0; i < 7; i++) {
+                sprites[i] = ImageIO.read(new File("src/sprites/bomb/bomb" + i + ".png"));
+            }
         } catch (IOException e) {
-            System.out.println("File not found!");
+            System.out.println(e.getMessage());
         }
+        frame = 0;
         this.player = player;
-        countdown = 125; //3secs
+        countdown = 126; //Slightly over 3 secs
     }
 
     public boolean canExplode() {
