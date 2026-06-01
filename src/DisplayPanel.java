@@ -138,6 +138,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 return;
             }
         }
+        for (Player player1 : players) {
+            if (player != player1 && player.bounds.intersects(player1.bounds)) {
+                if (player.collision) { //Space has collision
+                    player.bounds.x -= x;
+                    player.bounds.y -= y;
+                    return;
+                }
+            }
+        }
         for (Space space : spaces) {
             if (player.bounds.intersects(space.bounds)) { //Returns to original position if:
                 if (space.collision) { //Space has collision
@@ -173,7 +182,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                                 break;
                             }
                         }
-                        if (!isSpawnArea) explosions.add(new Explosion(x,y, bomb.getPlayer())); //Creates explosions in a square around the exploded bomb
+                        if (!isSpawnArea && (x == bomb.bounds.x || y == bomb.bounds.y)) explosions.add(new Explosion(x,y, bomb.getPlayer())); //Creates explosions in a square around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
