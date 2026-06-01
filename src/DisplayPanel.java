@@ -172,6 +172,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         int blastRadius = 1; //The amount of blocks around the bomb to destroy
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
+            if (!bomb.bounds.intersects(bomb.getPlayer().bounds) && !bomb.collision) bomb.collision = true;
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
                 for (int x = bomb.bounds.x-blastRadius*64; x <= bomb.bounds.x+blastRadius*64; x += 64) {
                     for (int y = bomb.bounds.y-blastRadius*64; y <= bomb.bounds.y+blastRadius*64; y += 64) {
