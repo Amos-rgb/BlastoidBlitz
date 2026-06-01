@@ -11,6 +11,7 @@ public class Player extends Space {
     private int health;
     private int score;
     private int immunity;
+    private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
     public Player(int x, int y) {
@@ -31,6 +32,7 @@ public class Player extends Space {
         health = maxHealth;
         score = 0;
         immunity = 125; //3secs
+        maxBombs = 2;
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
@@ -55,6 +57,8 @@ public class Player extends Space {
     public int getHealth() {return health;}
 
     public int getMaxHealth() {return maxHealth;}
+
+    public int getMaxBombs() {return maxBombs;}
 
     public void setxMoveAmount(int xMoveAmount) {this.xMoveAmount = xMoveAmount;}
 

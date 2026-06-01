@@ -15,6 +15,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private Timer timer;
     public Player[] players;
     public ArrayList<Space> spaces;
+    public int spaceCountdown;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
 
@@ -24,6 +25,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         players[0] = new Player(64,64); //Creates player 1 in the upper left corner
         players[1] = new Player(960,960); //Creates player 2 in the lower right corner
         spaces = new ArrayList<>();
+        spaceCountdown = 0;
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
@@ -120,6 +122,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void updateGame() {
+        regenerateSpaces();
         movePlayers();
         checkExplosions();
         checkBombs();
@@ -164,8 +167,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void addBomb(Player player) {
-        for (Bomb bomb : bombs) if (bomb.bounds.intersects(player.bounds)) return; //Prevents placing multiple bombs on the same spot
-        bombs.add(new Bomb(player));
+        int playerBombs = 0;
+        for (Bomb bomb : bombs) {
+            if (bomb.bounds.intersects(player.bounds)) return; //Prevents placing multiple bombs on the same spot}
+            if (bomb.getPlayer() == player) playerBombs++;
+        }
+        if (playerBombs < player.getMaxBombs()) bombs.add(new Bomb(player));
     }
 
     public void checkBombs() {
@@ -213,6 +220,26 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 explosions.remove(explosion); //Removes all finished explosions
             }
         }
+    }
+
+    public void regenerateSpaces() {
+        if (spaces.size() < 30) {
+            Rectangle bounds = randomSpace();
+            for (Space space : spaces) {
+                if (bounds.intersects(space.bounds)) return;
+            }
+            for (Bomb bomb : bombs) {
+                if (bounds.intersects(bomb.bounds)) return;
+            }
+            for (Player player : players) {
+                if (bounds.intersects(player.bounds)) return;
+            }
+            spaces.add(new Destructible(bounds.x, bounds.y));
+        }
+    }
+
+    public Rectangle randomSpace() {
+        return new Rectangle((int) (Math.random()*17)*64, (int) (Math.random()*17)*64, 64, 64);
     }
 }
 
