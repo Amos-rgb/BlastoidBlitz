@@ -17,6 +17,7 @@ public class Main {
         titleScreen.add(button);
         button.setBounds(64,192,256,64);
         button.addActionListener(e -> startGame());
+        button.addActionListener(e -> titleScreen.dispose());
         JLabel label = new JLabel(new ImageIcon("src/sprites/title.png"));
         label.getIcon().paintIcon(titleScreen, titleScreen.getGraphics(), 64, 64);
         try {

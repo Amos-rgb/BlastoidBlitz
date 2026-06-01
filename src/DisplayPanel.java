@@ -176,7 +176,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkBombs() {
-        int blastRadius = 1; //The amount of blocks around the bomb to destroy
+        int blastRadius = 10; //The amount of blocks around the bomb to destroy
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
             if (!bomb.bounds.intersects(bomb.getPlayer().bounds) && !bomb.collision) bomb.collision = true;
@@ -223,19 +223,23 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void regenerateSpaces() {
-        if (spaces.size() < 30) {
-            Rectangle bounds = randomSpace();
-            for (Space space : spaces) {
-                if (bounds.intersects(space.bounds)) return;
+        if (spaceCountdown == 0) {
+            if (spaces.size() < 180) {
+                Rectangle bounds = randomSpace();
+                for (Space space : spaces) {
+                    if (bounds.intersects(space.bounds)) return;
+                }
+                for (Bomb bomb : bombs) {
+                    if (bounds.intersects(bomb.bounds)) return;
+                }
+                for (Player player : players) {
+                    if (bounds.intersects(player.bounds)) return;
+                }
+                spaces.add(new Destructible(bounds.x, bounds.y));
+                spaceCountdown = 75;//
             }
-            for (Bomb bomb : bombs) {
-                if (bounds.intersects(bomb.bounds)) return;
-            }
-            for (Player player : players) {
-                if (bounds.intersects(player.bounds)) return;
-            }
-            spaces.add(new Destructible(bounds.x, bounds.y));
         }
+        spaceCountdown--;
     }
 
     public Rectangle randomSpace() {
