@@ -14,6 +14,7 @@ public class Player extends Space {
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
+    private boolean icePhysics;
     public Player(int x, int y) {
         super(x,y);
         START_X = x;
@@ -33,6 +34,7 @@ public class Player extends Space {
         score = 0;
         immunity = 125; //3secs
         maxBombs = 2;
+        icePhysics = true;
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
@@ -60,13 +62,29 @@ public class Player extends Space {
 
     public int getMaxBombs() {return maxBombs;}
 
-    public void setxMoveAmount(int xMoveAmount) {this.xMoveAmount = xMoveAmount;}
-
-    public void setyMoveAmount(int yMoveAmount) {this.yMoveAmount = yMoveAmount;}
+    public void setMoveAmount(int xMoveAmount, int yMoveAmount) {
+        if (isOnGrid()) {
+            this.xMoveAmount = xMoveAmount;
+            this.yMoveAmount = yMoveAmount;
+        }
+    }
 
     public int getxMoveAmount() {return xMoveAmount;}
 
     public int getyMoveAmount() {return yMoveAmount;}
+
+    public boolean isIcePhysics() {
+        return icePhysics;
+    }
+
+    public boolean isOnGrid() {
+        return bounds.x % 64 == 0 && bounds.y % 64 == 0;
+    }
+
+    public void movePlayer(int x, int y) {
+        bounds.x += x;
+        bounds.y += y;
+    }
 
     @Override
     public void drawSpace(Graphics g) {

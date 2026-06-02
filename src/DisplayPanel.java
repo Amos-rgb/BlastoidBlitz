@@ -4,10 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     private boolean[] pressedKeys;
@@ -90,33 +88,31 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) player.reduceImmunity();
         int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
-        if (players[0].bounds.x % 64 == 0 && players[0].bounds.y % 64 == 0) { //Checks that the player is on the grid
-            players[0].setxMoveAmount(0); //If the player is not pressing any movement keys, stops moving
-            players[0].setyMoveAmount(0);
-            if (pressedKeys[KeyEvent.VK_W]) players[0].setyMoveAmount(-moveAmount); //Up
+        if (!players[0].isIcePhysics() || players[0].isOnGrid()) {
+            players[0].setMoveAmount(0, 0);
+            if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
 
-            if (pressedKeys[KeyEvent.VK_A]) players[0].setxMoveAmount(-moveAmount); //Left
+            if (pressedKeys[KeyEvent.VK_A]) players[0].setMoveAmount(-moveAmount, 0); //Left
 
-            if (pressedKeys[KeyEvent.VK_S]) players[0].setyMoveAmount(moveAmount); //Down
+            if (pressedKeys[KeyEvent.VK_S]) players[0].setMoveAmount(0, moveAmount); //Down
 
-            if (pressedKeys[KeyEvent.VK_D]) players[0].setxMoveAmount(moveAmount); //Right
+            if (pressedKeys[KeyEvent.VK_D]) players[0].setMoveAmount(moveAmount, 0); //Right
 
-            if (pressedKeys[KeyEvent.VK_Q]) {addBomb(players[0]);} //Creates a bomb at the player's current location
+            if (pressedKeys[KeyEvent.VK_Q]) addBomb(players[0]); //Creates a bomb at the player's current location
         }
         movePlayer(players[0]); //Moves the player according to their moveAmounts
         // player 2
-        if (players[1].bounds.x % 64 == 0 && players[1].bounds.y % 64 == 0) {
-            players[1].setxMoveAmount(0);
-            players[1].setyMoveAmount(0);
-            if (pressedKeys[KeyEvent.VK_UP]) players[1].setyMoveAmount(-moveAmount);
+        if (!players[1].isIcePhysics() || players[1].isOnGrid()) {
+            players[1].setMoveAmount(0,0);
+            if (pressedKeys[KeyEvent.VK_UP]) players[1].setMoveAmount(0, -moveAmount);
 
-            if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setxMoveAmount(-moveAmount);
+            if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setMoveAmount(-moveAmount, 0);
 
-            if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setyMoveAmount(moveAmount);
+            if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setMoveAmount(0, moveAmount);
 
-            if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setxMoveAmount(moveAmount);
+            if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setMoveAmount(moveAmount, 0);
 
-            if (pressedKeys[KeyEvent.VK_SLASH]) {addBomb(players[1]);}
+            if (pressedKeys[KeyEvent.VK_SLASH]) addBomb(players[1]);
         }
         movePlayer(players[1]);
     }
@@ -132,34 +128,33 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void movePlayer(Player player) {
         int x = player.getxMoveAmount();
         int y = player.getyMoveAmount();
-        player.bounds.x += x; //Moves the selected player by the desired amount
-        player.bounds.y += y;
+        player.movePlayer(x,y); //Moves the selected player by the desired amount
         for (Bomb bomb : bombs) {
-            if (bomb.collision && player.bounds.intersects(bomb.bounds)) { //If the player is entering a space with collision, returns to original position
-                player.bounds.x -= x;
-                player.bounds.y -= y;
+            if (bomb.collision && player.bounds.intersects(bomb.bounds)) { //Returns to original position when colliding with bomb
+                player.setMoveAmount(0, 0);
+                player.movePlayer(-x,-y);
                 return;
             }
         }
         for (Player player1 : players) {
-            if (player != player1 && player.bounds.intersects(player1.bounds)) {
-                if (player.collision) { //Space has collision
-                    player.bounds.x -= x;
-                    player.bounds.y -= y;
+            if (player != player1 && player.bounds.intersects(player1.bounds)) { //Returns to original position when colliding with player
+                if (player1.collision) {
+                    player.setMoveAmount(0, 0);
+                    player.movePlayer(-x,-y);
                     return;
                 }
             }
         }
         for (Space space : spaces) {
-            if (player.bounds.intersects(space.bounds)) { //Returns to original position if:
-                if (space.collision) { //Space has collision
-                    player.bounds.x -= x;
-                    player.bounds.y -= y;
+            if (player.bounds.intersects(space.bounds)) {
+                if (space.collision) { //Returns to original position when colliding with miscellaneous space
+                    player.setMoveAmount(0, 0);
+                    player.movePlayer(-x,-y);
                     return;
                 }
-                if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Space is other player's spawn area
-                    player.bounds.x -= x;
-                    player.bounds.y -= y;
+                if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
+                    player.setMoveAmount(0, 0);
+                    player.movePlayer(-x,-y);
                     return;
                 }
             }
