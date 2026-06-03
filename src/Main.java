@@ -1,25 +1,39 @@
-import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, FontFormatException {
+        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/pirateFont.otf")));
         JFrame titleScreen = new JFrame("Title Screen");
         titleScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        titleScreen.setSize(384, 320);
+        titleScreen.setSize(512, 512);
         titleScreen.setLocationRelativeTo(null);
-        titleScreen.setVisible(true); //Unfinished attempt at implementing title screen
-        JButton button = new JButton("Play");
-        titleScreen.add(button);
-        button.setBounds(64,192,256,64);
-        button.addActionListener(e -> startGame());
-        button.addActionListener(e -> titleScreen.dispose());
-        JLabel label = new JLabel(new ImageIcon("src/sprites/title.png"));
-        label.getIcon().paintIcon(titleScreen, titleScreen.getGraphics(), 64, 64);
+        titleScreen.setLayout(null);
+        ImageIcon title = new ImageIcon("./src/sprites/title.png");
+        JLabel label = new JLabel(title);
+        label.setBounds(128, 32, 256, 128);
+        titleScreen.add(label);
+        titleScreen.setVisible(true);
+        JButton gameButton = new JButton("Play");
+        titleScreen.add(gameButton);
+        for (Font font : graphicsEnvironment.getAllFonts()) System.out.println(font.getFontName());
+        gameButton.setFont(graphicsEnvironment.getAllFonts()[1]);
+        gameButton.setBounds(128,192,256,64);
+        gameButton.addActionListener(e -> gameSelect());
+        gameButton.addActionListener(e -> titleScreen.dispose());
+        JButton settingsButton = new JButton("Controls");
+        titleScreen.add(settingsButton);
+        settingsButton.setBounds(128,288,256,64);
+        settingsButton.addActionListener(e -> gameSelect());
+        settingsButton.addActionListener(e -> titleScreen.dispose());
+        JButton exitButton = new JButton("Exit");
+        titleScreen.add(exitButton);
+        exitButton.setBounds(128,384,256,64);
+        exitButton.addActionListener(e -> titleScreen.dispose());
         try {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
             Clip clip = AudioSystem.getClip();
@@ -29,6 +43,19 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public static void gameSelect() {
+        JFrame gameSelectScreen = new JFrame("Game Select");
+        gameSelectScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameSelectScreen.setSize(384, 640);
+        gameSelectScreen.setLocationRelativeTo(null);
+        gameSelectScreen.setVisible(true);
+        JButton button = new JButton("Start!");
+        gameSelectScreen.add(button);
+        button.setBounds(64,192,256,64);
+        button.addActionListener(e -> startGame());
+        button.addActionListener(e -> gameSelectScreen.dispose());
     }
     public static void startGame() {
         try { //Plays audio
