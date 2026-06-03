@@ -21,7 +21,7 @@ public class Main {
         JButton gameButton = new JButton("Play");
         titleScreen.add(gameButton);
         for (Font font : graphicsEnvironment.getAllFonts()) System.out.println(font.getFontName());
-        gameButton.setFont(graphicsEnvironment.getAllFonts()[1]);
+        gameButton.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 14));
         gameButton.setBounds(128,192,256,64);
         gameButton.addActionListener(e -> gameSelect());
         gameButton.addActionListener(e -> titleScreen.dispose());
