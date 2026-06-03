@@ -13,7 +13,7 @@ public class Player extends Space {
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
-    private int[] effects;
+    public int[] effects;
     /* Immunity: 0
     * Ice physics: 1
     * Trapped: 2
@@ -98,6 +98,10 @@ public class Player extends Space {
         }
     }
 
+    public void inflict(int effect, int frames) {
+        effects[effect] += frames;
+    }
+
     @Override
     public void drawSpace(Graphics g) {
         for (int i = 0; i < effects.length; i++) if (effects[i] > 0) effects[i]--;
@@ -106,7 +110,16 @@ public class Player extends Space {
             frame++;
             frame %= 2;
         }
-        g.drawImage(sprites[frame],bounds.x,bounds.y, null);
+        if (effects[2] == 0) {
+            g.drawImage(sprites[frame],bounds.x,bounds.y, null);
+        } else {
+            try {
+                BufferedImage b = ImageIO.read(new File("src/sprites/trappedPlayerInBubble.png"));
+                g.drawImage(b,bounds.x,bounds.y, null);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         frameCountdown--;
     }
 }

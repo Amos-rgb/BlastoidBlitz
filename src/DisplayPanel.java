@@ -143,28 +143,17 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 }
             }
         }
-        boolean isRemoving = false;
-        Space removingBlock = null;
-        for (Space space : spaces) {
+        for (int i = 0; i < spaces.size(); i++) {
+            Space space = spaces.get(i);
             if (player.bounds.intersects(space.bounds)) {
                 if (space.collision) { //Returns to original position when colliding with miscellaneous space
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
                 }else{
-                    if (space.isTrap){
-                        removingBlock = space;
-                        int trapCount = 0;
-                        while(trapCount < 83){
-                            trapCount++;
-                            if (tikTok % 2 == 0) {
-                                player.movePlayer(0, -5);
-                            }else {
-                                player.movePlayer(0, 5);
-                            }
-                        }
-                        isRemoving = true;
-
+                    if (space.isTrap && player.isOnGrid()) {
+                        player.inflict(2,125);
+                        spaces.remove(space);
                     }
                 }
                 if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
@@ -173,9 +162,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     return;
                 }
             }
-        }
-        if (isRemoving){
-            spaces.remove(spaces.indexOf(removingBlock));
         }
     }
 
