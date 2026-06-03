@@ -10,15 +10,13 @@ public class Player extends Space {
     private int maxHealth;
     private int health;
     private int score;
-    private int immunity;
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
     private int[] effects;
-    /* Ice physics: 0
-    * Trapped: 1
-    *
-    *
+    /* Immunity: 0
+    * Ice physics: 1
+    * Trapped: 2
     *
     * */
     public Player(int x, int y) {
@@ -38,16 +36,15 @@ public class Player extends Space {
         maxHealth = 1;
         health = maxHealth;
         score = 0;
-        immunity = 125; //3secs
         maxBombs = 2;
         effects = new int[10];
-        effects[1] = 125;
+        effects[0] = 125; //3secs
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
-        if (immunity == 0) {
+        if (effects[0] == 0) {
             health--;
-            immunity = 125;
+            effects[0] = 125;
             if (health == 0) {
                 health = maxHealth;
                 bounds.x = START_X;
@@ -57,8 +54,6 @@ public class Player extends Space {
         }
         return false;
     }
-    public void reduceImmunity() {if (immunity > 0) immunity--;}
-
     public void addScore() {score++;} //Adds 1 to the player's score
 
     public int getScore() {return score;}
@@ -97,7 +92,7 @@ public class Player extends Space {
     }
 
     public void movePlayer(int x, int y) {
-        if (effects[1] == 0) {
+        if (effects[2] == 0) {
             bounds.x += x;
             bounds.y += y;
         }

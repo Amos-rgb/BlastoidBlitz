@@ -85,7 +85,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
-        for (Player player : players) player.reduceImmunity();
         int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
         players[0].setMoveAmount(0, 0);
