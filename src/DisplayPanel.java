@@ -16,6 +16,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public int spaceCountdown;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
+    private int tikTok;//a variable to exam if a timer is triggered
 
     public DisplayPanel() {
         pressedKeys = new boolean[128];
@@ -36,6 +37,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
+
         timer.start();
     }
 
@@ -118,6 +120,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         checkExplosions();
         checkBombs();
         repaint();
+        tikTok++;
     }
 
     public void movePlayer(Player player) {
@@ -140,12 +143,29 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 }
             }
         }
+        boolean isRemoving = false;
+        Space removingBlock = null;
         for (Space space : spaces) {
             if (player.bounds.intersects(space.bounds)) {
                 if (space.collision) { //Returns to original position when colliding with miscellaneous space
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
+                }else{
+                    if (space.isTrap){
+                        removingBlock = space;
+                        int trapCount = 0;
+                        while(trapCount < 83){
+                            trapCount++;
+                            if (tikTok % 2 == 0) {
+                                player.movePlayer(0, -5);
+                            }else {
+                                player.movePlayer(0, 5);
+                            }
+                        }
+                        isRemoving = true;
+
+                    }
                 }
                 if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
                     player.setMoveAmount();
@@ -153,6 +173,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     return;
                 }
             }
+        }
+        if (isRemoving){
+            spaces.remove(spaces.indexOf(removingBlock));
         }
     }
 
@@ -214,7 +237,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public void regenerateSpaces() {
         if (spaceCountdown == 0) {
-            if (spaces.size() < 180) {
+            if (spaces.size() < 250) {
                 Rectangle bounds = randomSpace();
                 for (Space space : spaces) {
                     if (bounds.intersects(space.bounds)) return;
@@ -225,7 +248,11 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (Player player : players) {
                     if (bounds.intersects(player.bounds)) return;
                 }
-                spaces.add(new Destructible(bounds.x, bounds.y));
+                if (Math.random() > 0.3){
+                    spaces.add(new Destructible(bounds.x, bounds.y));
+            }else {
+                spaces.add(new Destructible(bounds.x, bounds.y, true));
+            }
                 spaceCountdown = 75;//
             }
         }

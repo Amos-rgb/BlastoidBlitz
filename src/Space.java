@@ -9,6 +9,7 @@ public class Space {
 
     boolean collision; //Whether the space should prevent a player from moving on to it (true for Players and Immovables, false for Bombs and Explosions)
     boolean destroyable; //Whether the space can be destroyed by bombs
+    boolean isTrap;
     BufferedImage[] sprites;
     int frame;
     final int FRAME_WAIT_TIME = 18; //Frames before a sprite's frame is updated (18 = 0.432 secs)
