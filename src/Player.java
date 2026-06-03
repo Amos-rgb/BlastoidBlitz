@@ -16,7 +16,7 @@ public class Player extends Space {
     private int yMoveAmount;
     private boolean[] effects;
     /* Ice physics: 0
-    *
+    * Trapped: 1
     *
     *
     *
@@ -41,6 +41,7 @@ public class Player extends Space {
         immunity = 125; //3secs
         maxBombs = 2;
         effects = new boolean[10];
+        effects[1] = false;
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
@@ -96,8 +97,10 @@ public class Player extends Space {
     }
 
     public void movePlayer(int x, int y) {
-        bounds.x += x;
-        bounds.y += y;
+        if (!effects[1]) {
+            bounds.x += x;
+            bounds.y += y;
+        }
     }
 
     @Override
