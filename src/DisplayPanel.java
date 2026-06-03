@@ -191,9 +191,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (int i = 0; i < explosions.size(); i++) {
             Explosion explosion = explosions.get(i);
             if (explosion.canDealDamage()) { //Checks if an explosion has just been created, and therefore can deal damage
-                for (int j = 0; j < bombs.size(); j++) { //Checks all bombs to see if they are on the same space as the explosion
-                    Bomb bomb = bombs.get(j);
-                    if (explosion.bounds.intersects(bomb.bounds)) bomb.detonate(); //If the bomb is hit by the explosion, it explodes immediately
+                for (Bomb bomb : bombs) { //Checks all bombs to see if they are on the same space as the explosion
+                    if (explosion.bounds.intersects(bomb.bounds))
+                        bomb.detonate(); //If the bomb is hit by the explosion, it explodes immediately
                 }
                 for (int j = 0; j < spaces.size(); j++) {
                     Space space = spaces.get(j);
@@ -211,7 +211,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
         }
     }
-
     public void regenerateSpaces() {
         if (spaceCountdown == 0) {
             if (spaces.size() < 180) {

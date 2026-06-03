@@ -66,7 +66,7 @@ public class Player extends Space {
 
     public void setMoveAmount(int x, int y) {
         if (isOnGrid()) {
-            if (effects[0] > 0) {
+            if (effects[1] > 0) {
                 if (xMoveAmount == 0 && yMoveAmount == 0) {
                     this.xMoveAmount = x;
                     this.yMoveAmount = y;
