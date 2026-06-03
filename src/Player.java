@@ -14,7 +14,13 @@ public class Player extends Space {
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
-    private boolean icePhysics;
+    private boolean[] effects;
+    /* Ice physics: 0
+    *
+    *
+    *
+    *
+    * */
     public Player(int x, int y) {
         super(x,y);
         START_X = x;
@@ -34,7 +40,6 @@ public class Player extends Space {
         score = 0;
         immunity = 125; //3secs
         maxBombs = 2;
-        icePhysics = true;
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
@@ -62,20 +67,28 @@ public class Player extends Space {
 
     public int getMaxBombs() {return maxBombs;}
 
-    public void setMoveAmount(int xMoveAmount, int yMoveAmount) {
+    public void setMoveAmount(int x, int y) {
         if (isOnGrid()) {
-            this.xMoveAmount = xMoveAmount;
-            this.yMoveAmount = yMoveAmount;
+            if (effects[0]) {
+                if (xMoveAmount == 0 && yMoveAmount == 0) {
+                    this.xMoveAmount = x;
+                    this.yMoveAmount = y;
+                }
+            } else {
+                this.xMoveAmount = x;
+                this.yMoveAmount = y;
+            }
         }
+    }
+
+    public void setMoveAmount() {
+        this.xMoveAmount = 0;
+        this.yMoveAmount = 0;
     }
 
     public int getxMoveAmount() {return xMoveAmount;}
 
     public int getyMoveAmount() {return yMoveAmount;}
-
-    public boolean isIcePhysics() {
-        return icePhysics;
-    }
 
     public boolean isOnGrid() {
         return bounds.x % 64 == 0 && bounds.y % 64 == 0;

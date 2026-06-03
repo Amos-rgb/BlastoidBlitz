@@ -88,32 +88,28 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) player.reduceImmunity();
         int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
-        if (!players[0].isIcePhysics() || players[0].isOnGrid()) {
-            players[0].setMoveAmount(0, 0);
-            if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
+        players[0].setMoveAmount(0, 0);
+        if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
 
-            if (pressedKeys[KeyEvent.VK_A]) players[0].setMoveAmount(-moveAmount, 0); //Left
+        if (pressedKeys[KeyEvent.VK_A]) players[0].setMoveAmount(-moveAmount, 0); //Left
 
-            if (pressedKeys[KeyEvent.VK_S]) players[0].setMoveAmount(0, moveAmount); //Down
+        if (pressedKeys[KeyEvent.VK_S]) players[0].setMoveAmount(0, moveAmount); //Down
 
-            if (pressedKeys[KeyEvent.VK_D]) players[0].setMoveAmount(moveAmount, 0); //Right
+        if (pressedKeys[KeyEvent.VK_D]) players[0].setMoveAmount(moveAmount, 0); //Right
 
-            if (pressedKeys[KeyEvent.VK_Q]) addBomb(players[0]); //Creates a bomb at the player's current location
-        }
+        if (pressedKeys[KeyEvent.VK_Q]) addBomb(players[0]); //Creates a bomb at the player's current location
         movePlayer(players[0]); //Moves the player according to their moveAmounts
         // player 2
-        if (!players[1].isIcePhysics() || players[1].isOnGrid()) {
-            players[1].setMoveAmount(0,0);
-            if (pressedKeys[KeyEvent.VK_UP]) players[1].setMoveAmount(0, -moveAmount);
+        players[1].setMoveAmount(0,0);
+        if (pressedKeys[KeyEvent.VK_UP]) players[1].setMoveAmount(0, -moveAmount);
 
-            if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setMoveAmount(-moveAmount, 0);
+        if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setMoveAmount(-moveAmount, 0);
 
-            if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setMoveAmount(0, moveAmount);
+        if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setMoveAmount(0, moveAmount);
 
-            if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setMoveAmount(moveAmount, 0);
+        if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setMoveAmount(moveAmount, 0);
 
-            if (pressedKeys[KeyEvent.VK_SLASH]) addBomb(players[1]);
-        }
+        if (pressedKeys[KeyEvent.VK_SLASH]) addBomb(players[1]);
         movePlayer(players[1]);
     }
 
@@ -131,7 +127,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         player.movePlayer(x,y); //Moves the selected player by the desired amount
         for (Bomb bomb : bombs) {
             if (bomb.collision && player.bounds.intersects(bomb.bounds)) { //Returns to original position when colliding with bomb
-                player.setMoveAmount(0, 0);
+                player.setMoveAmount();
                 player.movePlayer(-x,-y);
                 return;
             }
@@ -139,7 +135,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player1 : players) {
             if (player != player1 && player.bounds.intersects(player1.bounds)) { //Returns to original position when colliding with player
                 if (player1.collision) {
-                    player.setMoveAmount(0, 0);
+                    player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
                 }
@@ -148,12 +144,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Space space : spaces) {
             if (player.bounds.intersects(space.bounds)) {
                 if (space.collision) { //Returns to original position when colliding with miscellaneous space
-                    player.setMoveAmount(0, 0);
+                    player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
                 }
                 if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
-                    player.setMoveAmount(0, 0);
+                    player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
                 }
@@ -171,7 +167,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkBombs() {
-        int blastRadius = 10; //The amount of blocks around the bomb to destroy
+        int blastRadius = 2; //The amount of blocks around the bomb to destroy
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
             if (!bomb.bounds.intersects(bomb.getPlayer().bounds) && !bomb.collision) bomb.collision = true;

@@ -46,17 +46,17 @@ public class MazeGenerator {
             map[y][0] = WALL;
             map[y][COLS - 1] = WALL;
         }
-
+        int spawnAreaSize = 2;
         //Player 1 spawn area
-        for (int y = 1; y < 4; y++) {
-            for (int x = 1; x < 4; x++) {
+        for (int y = 1; y <= spawnAreaSize; y++) {
+            for (int x = 1; x <= spawnAreaSize; x++) {
                 map[y][x] = SPAWN_AREA_1;
             }
         }
 
         //Player 2 spawn area
-        for (int y = ROWS-2; y > ROWS-5; y--) {
-            for (int x = COLS-2; x > ROWS-5; x--) {
+        for (int y = ROWS-2; y > ROWS-2-spawnAreaSize; y--) {
+            for (int x = COLS-2; x > ROWS-2-spawnAreaSize; x--) {
                 map[y][x] = SPAWN_AREA_2;
             }
         }
