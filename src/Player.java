@@ -14,7 +14,7 @@ public class Player extends Space {
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
-    private boolean[] effects;
+    private int[] effects;
     /* Ice physics: 0
     * Trapped: 1
     *
@@ -40,8 +40,8 @@ public class Player extends Space {
         score = 0;
         immunity = 125; //3secs
         maxBombs = 2;
-        effects = new boolean[10];
-        effects[1] = false;
+        effects = new int[10];
+        effects[1] = 125;
     }
 
     public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
@@ -71,7 +71,7 @@ public class Player extends Space {
 
     public void setMoveAmount(int x, int y) {
         if (isOnGrid()) {
-            if (effects[0]) {
+            if (effects[0] > 0) {
                 if (xMoveAmount == 0 && yMoveAmount == 0) {
                     this.xMoveAmount = x;
                     this.yMoveAmount = y;
@@ -97,7 +97,7 @@ public class Player extends Space {
     }
 
     public void movePlayer(int x, int y) {
-        if (!effects[1]) {
+        if (effects[1] == 0) {
             bounds.x += x;
             bounds.y += y;
         }
@@ -105,6 +105,7 @@ public class Player extends Space {
 
     @Override
     public void drawSpace(Graphics g) {
+        for (int i = 0; i < effects.length; i++) if (effects[i] > 0) effects[i]--;
         if (frameCountdown == 0) {
             frameCountdown = FRAME_WAIT_TIME;
             frame++;
