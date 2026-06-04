@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException, FontFormatException {
         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/pirateFont.otf")));
-        titleScreen();
+        titleScreen(null);
         try {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
             Clip clip = AudioSystem.getClip();
@@ -20,32 +20,32 @@ public class Main {
 
     }
 
-    public static void titleScreen() {
+    public static void titleScreen(Component location) {
         JFrame titleScreen = new JFrame("Title Screen");
         titleScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         titleScreen.setSize(256, 384);
-        titleScreen.setLocationRelativeTo(null);
+        titleScreen.setLocationRelativeTo(location);
         titleScreen.setLayout(null);
         titleScreen.add(new JButton());
 
         JButton titleCard = new JButton(new ImageIcon("./src/sprites/title.png")); //Title card
+        titleCard.addActionListener(e -> titleScreen(titleScreen));
         titleCard.addActionListener(e -> titleScreen.dispose());
-        titleCard.addActionListener(e -> titleScreen());
         titleCard.setBorderPainted(false);
         titleCard.setBounds(0, 16, 256, 128);
         titleScreen.add(titleCard);
 
-        JButton playButton = titleButton("Play",144); //Play button
+        JButton playButton = fishButton("Play",64, 144); //Play button
         titleScreen.add(playButton);
-        playButton.addActionListener(e -> gameSelect());
+        playButton.addActionListener(e -> gameSelect(titleScreen));
         playButton.addActionListener(e -> titleScreen.dispose());
 
-        JButton settingButton = titleButton("Setting",208); //Setting button
+        JButton settingButton = fishButton("Setting", 64,208); //Setting button
         titleScreen.add(settingButton);
-        settingButton.addActionListener(e -> setting());
+        settingButton.addActionListener(e -> setting(titleScreen));
         settingButton.addActionListener(e -> titleScreen.dispose());
 
-        JButton exitButton = titleButton("Exit",272); //Exit button
+        JButton exitButton = fishButton("Exit",64,272); //Exit button
         titleScreen.add(exitButton);
         exitButton.addActionListener(e -> System.exit(0));
 
@@ -56,11 +56,11 @@ public class Main {
         titleScreen.setVisible(true);
     }
 
-    public static void setting() {
+    public static void setting(Component location) {
         JFrame settingScreen = new JFrame("Setting");
         settingScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         settingScreen.setSize(256,384);
-        settingScreen.setLocationRelativeTo(null);
+        settingScreen.setLocationRelativeTo(location);
         settingScreen.setLayout(null);
 
         JLabel settingText = new JLabel("<html> This game's setting is in the ocean. </html>"); //Text
@@ -69,16 +69,8 @@ public class Main {
         settingText.setBounds(16,128,224,64);
         settingScreen.add(settingText);
 
-        int fish = (int) (Math.random()*7); //Back button
-        JButton back = new JButton(new ImageIcon("src/sprites/fish/fish" + fish + ".png"));
-        back.setBorderPainted(false);
-        back.setLayout(null);
-        JLabel label = new JLabel("Back");
-        label.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 10));
-        back.add(label);
-        back.setBounds(16,272,128,64);
-        label.setBounds(40,0,128,64);
-        back.addActionListener(e -> titleScreen());
+        JButton back = fishButton("Back",64,208); //Back button
+        back.addActionListener(e -> titleScreen(settingScreen));
         back.addActionListener(e -> settingScreen.dispose());
         settingScreen.add(back);
 
@@ -89,17 +81,17 @@ public class Main {
         settingScreen.setVisible(true);
     }
 
-    public static void gameSelect() {
+    public static void gameSelect(Component location) {
         JFrame gameSelectScreen = new JFrame("Game Select");
         gameSelectScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameSelectScreen.setSize(512, 512);
+        gameSelectScreen.setSize(256, 384);
         gameSelectScreen.setLocationRelativeTo(null);
-        gameSelectScreen.setVisible(true);
-        JButton button = new JButton("Start!");
+        gameSelectScreen.setLayout(null);
+        JButton button = fishButton("Start!",64,192);
         gameSelectScreen.add(button);
-        button.setBounds(64,192,256,64);
         button.addActionListener(e -> startGame());
         button.addActionListener(e -> gameSelectScreen.dispose());
+        gameSelectScreen.setVisible(true);
     }
     public static void startGame() {
         try { //Plays audio
@@ -123,7 +115,7 @@ public class Main {
         frame.setVisible(true);
     }
 
-    public static JButton titleButton(String text, int y) {
+    public static JButton fishButton(String text, int x, int y) {
         int fish = (int) (Math.random()*14);
         JButton button = new JButton(new ImageIcon("src/sprites/fish/fish" + fish + ".png"));
         button.setBorderPainted(false);
@@ -131,10 +123,10 @@ public class Main {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 10));
         if (fish <= 6) {
-            button.setBounds(76, y, 128, 64);
+            button.setBounds(x+12, y, 128, 64);
             label.setBounds(36, 0, 64, 64);
         } else {
-            button.setBounds(64, y, 128, 64);
+            button.setBounds(x, y, 128, 64);
             label.setBounds(48,0,64,64);
         }
         button.add(label);
