@@ -7,10 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws IOException, FontFormatException {
-        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/fishFont.otf")));
         titleScreen(null);
         try {
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(""));
             Clip clip = AudioSystem.getClip();
             clip.open(audio);
             clip.start();
@@ -64,7 +64,7 @@ public class Main {
         settingScreen.setLayout(null);
 
         JLabel settingText = new JLabel("<html> This game's setting is in the ocean. </html>"); //Text
-        settingText.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 18));
+        settingText.setFont(new Font("Little Fish", Font.PLAIN, 18));
         settingText.setForeground(Color.white);
         settingText.setBounds(16,128,224,64);
         settingScreen.add(settingText);
@@ -90,7 +90,7 @@ public class Main {
         gameSelectScreen.setLayout(null);
 
         JLabel gamemodeText = new JLabel("<html> Select a gamemode! </html>"); //Text
-        gamemodeText.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 18));
+        gamemodeText.setFont(new Font("Little Fish", Font.PLAIN, 24));
         gamemodeText.setForeground(Color.white);
         gamemodeText.setBounds(16,0,224,64);
         gameSelectScreen.add(gamemodeText);
@@ -113,24 +113,34 @@ public class Main {
         scoreMode.setBounds(172, 64, 64, 64);
         gameSelectScreen.add(scoreMode);
 
+        JLabel gamemodeDesc = new JLabel("<html> Players will play until the timer runs out! </html>"); //Description
+        gamemodeDesc.setFont(new Font("Little Fish", Font.PLAIN, 18));
+        gamemodeDesc.setForeground(Color.white);
+        gamemodeDesc.setBounds(16,136,224,64);
+        gamemodeDesc.setVerticalAlignment(SwingConstants.TOP);
+        gameSelectScreen.add(gamemodeDesc);
+
 
         timerMode.addActionListener(e -> {
             gamemode.set(1);
             timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerModeSelected.png"));
             livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesMode.png"));
             scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreMode.png"));
+            gamemodeDesc.setText("<html> Players will play until the timer runs out! </html>");
         });
         livesMode.addActionListener(e -> {
             gamemode.set(2);
             timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerMode.png"));
             livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesModeSelected.png"));
             scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreMode.png"));
+            gamemodeDesc.setText("<html> Players will play until one has run out of lives! </html>");
         });
         scoreMode.addActionListener(e -> {
             gamemode.set(3);
             timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerMode.png"));
             livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesMode.png"));
             scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreModeSelected.png"));
+            gamemodeDesc.setText("<html> Players will play until one has reached a certain score! </html>");
         });
 
         JButton button = fishButton("Start!",64,208); //Start button
@@ -155,7 +165,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1344, 1088);
         frame.setLocationRelativeTo(null);
-        DisplayPanel panel = new DisplayPanel();
+        DisplayPanel panel = new DisplayPanel(gamemode);
         MazeGenerator generator = new MazeGenerator(17, 17, 1088);
         generator.generate();
         generator.printMap(panel);
@@ -165,12 +175,12 @@ public class Main {
 
     public static JButton fishButton(String text, int x, int y) {
         int fish = (int) (Math.random()*14);
-        JButton button = new JButton(new ImageIcon("src/sprites/fish/fish" + fish + ".png"));
+        JButton button = new JButton(new ImageIcon("src/sprites/titleScreen/fish/fish" + fish + ".png"));
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setLayout(null);
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 10));
+        label.setFont(new Font("Little Fish", Font.PLAIN, 14));
         label.setForeground(Color.BLACK);
         if (fish <= 6) {
             button.setBounds(x+12, y, 128, 64);

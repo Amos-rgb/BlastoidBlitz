@@ -6,10 +6,21 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
+import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
-    private boolean[] pressedKeys;
+    public static final int FRAME_LENGTH = 12;
+    private Clip clip;
+    private boolean loopStarted;
+    private int gamemode;
+    private double clock;
+    private static boolean[] pressedKeys;
     private BufferedImage background;
     private BufferedImage GUIBackground;
     private Timer timer;
@@ -20,7 +31,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private ArrayList<Explosion> explosions;
     private int tikTok;//a variable to exam if a timer is triggered
 
-    public DisplayPanel() {
+    public DisplayPanel(int gamemode) {
+        this.gamemode = gamemode;
+        if (gamemode == 1) clock = 360;
+        else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
         players[0] = new Player(64,64); //Creates player 1 in the upper left corner
@@ -35,16 +49,16 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         } catch (IOException e) {
             System.out.println("File not found!");
         }
-        timer = new Timer(24,e -> updateGame()); //24ms delay = about 41 fps
+        timer = new Timer(FRAME_LENGTH,e -> updateGame()); //24ms delay = about 41 fps
         addMouseListener(this);
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
+        loopStarted = false;
         try { //Plays audio
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/test.wav"));
-            Clip clip = AudioSystem.getClip();
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleThemeIntro.wav"));
+            clip = AudioSystem.getClip();
             clip.open(audio);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
@@ -69,12 +83,20 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
-        try {
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
-        } catch (FontFormatException | IOException _) {}
 
-        g.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 18));
-        g.drawString("Score: " + players[0].getScore() + " : " + players[1].getScore(), 1096, 16);
+        g.setColor(new Color(15,94,156,64));
+        g.fillRect(0,0,1088,1088);
+        g.setFont(new Font("Little Fish", Font.PLAIN, 64));
+        g.setColor(Color.white);
+        g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format(clock%60) + new DecimalFormat(".000").format(clock%1),512,52);
+        g.setFont(new Font("Little Fish", Font.PLAIN, 36));
+        for (int i = 0; i < players.length; i++) { //Draws player info
+            g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
+            g.drawString("W, A, S, D, Q", 1096, 80+(i*200));
+            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*200));
+            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
+            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
+        }
     }
 
     @Override
@@ -109,7 +131,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
-        int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
+        int moveAmount = 64/8; //64 over the amount of frames it takes to move one space
         // player 1
         players[0].setMoveAmount(0, 0);
         if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
@@ -137,11 +159,25 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void updateGame() {
+        if (((clock < 347.3 && gamemode == 1) || (clock > 12.7 && gamemode != 1)) && !loopStarted) {
+            try { //Plays audio
+                AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
+                clip = AudioSystem.getClip();
+                clip.open(audio);
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+                clip.start();
+                loopStarted = true;
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         regenerateSpaces();
         movePlayers();
         checkExplosions();
         checkBombs();
         repaint();
+        if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
+        else clock += FRAME_LENGTH*0.001;
         tikTok++;
     }
 
@@ -174,7 +210,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     return;
                 }else{
                     if (space.isTrap && player.isOnGrid()) {
-                        player.inflict(2,125);
+                        player.inflict(2,3000/FRAME_LENGTH);
                         spaces.remove(space);
                     }
                 }
@@ -218,6 +254,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
         }
     }
+
     public void checkExplosions() {
         for (int i = 0; i < explosions.size(); i++) {
             Explosion explosion = explosions.get(i);
@@ -242,6 +279,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
         }
     }
+
     public void regenerateSpaces() {
         if (spaceCountdown == 0) {
             if (spaces.size() < 250) {
@@ -260,10 +298,18 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }else {
                 spaces.add(new Destructible(bounds.x, bounds.y, true));
             }
-                spaceCountdown = 75;//
+                spaceCountdown = 1000/FRAME_LENGTH;//1 sec
             }
         }
         spaceCountdown--;
+    }
+
+    public void checkWinCondition() {
+        if (gamemode == 1 && clock <= 0) System.exit(0);
+        for (Player player : players) {
+            if (gamemode == 2 && player.getLives() == 0) System.exit(0);
+            if (gamemode == 3 && player.getScore() >= 10) System.exit(0);
+        }
     }
 
     public Rectangle randomSpace() {

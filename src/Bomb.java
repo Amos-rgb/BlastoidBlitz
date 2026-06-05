@@ -20,7 +20,7 @@ public class Bomb extends Space {
         }
         frame = 0;
         this.player = player;
-        countdown = 126; //Slightly over 3 secs
+        countdown = 2440/DisplayPanel.FRAME_LENGTH; //3 secs
     }
 
     public boolean canExplode() {

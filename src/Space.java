@@ -12,7 +12,7 @@ public class Space {
     boolean isTrap;
     BufferedImage[] sprites;
     int frame;
-    final int FRAME_WAIT_TIME = 18; //Frames before a sprite's frame is updated (18 = 0.432 secs)
+    final int FRAME_WAIT_TIME = 400/DisplayPanel.FRAME_LENGTH; //Frames before a sprite's frame is updated
     int frameCountdown;
 
     public Space (int x, int y){

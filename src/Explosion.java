@@ -18,7 +18,7 @@ public class Explosion extends Space {
         }
         frame = 0;
         this.player = player;
-        countdown = 25; //0.6secs
+        countdown = 500/DisplayPanel.FRAME_LENGTH; //0.5secs
     }
 
     public boolean canDisappear() {
@@ -28,7 +28,7 @@ public class Explosion extends Space {
     }
 
     public boolean canDealDamage() {
-        return countdown == 24;
+        return countdown == (500/DisplayPanel.FRAME_LENGTH)-1;
     }
 
     public Player getPlayer() {return player;}

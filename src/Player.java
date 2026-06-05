@@ -10,6 +10,7 @@ public class Player extends Space {
     private int maxHealth;
     private int health;
     private int score;
+    public int lives;
     private int maxBombs;
     private int xMoveAmount;
     private int yMoveAmount;
@@ -36,6 +37,7 @@ public class Player extends Space {
         maxHealth = 1;
         health = maxHealth;
         score = 0;
+        lives = 10;
         maxBombs = 2;
         effects = new int[10];
         effects[0] = 125; //3secs
@@ -61,6 +63,8 @@ public class Player extends Space {
     public int getHealth() {return health;}
 
     public int getMaxHealth() {return maxHealth;}
+
+    public int getLives() {return lives;}
 
     public int getMaxBombs() {return maxBombs;}
 
