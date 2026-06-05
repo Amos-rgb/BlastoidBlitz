@@ -3,11 +3,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws IOException, FontFormatException {
         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/pirateFont.otf")));
+        graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
         titleScreen(null);
         try {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
@@ -27,12 +28,12 @@ public class Main {
         titleScreen.setLocationRelativeTo(location);
         titleScreen.setLayout(null);
         titleScreen.add(new JButton());
-
-        JButton titleCard = new JButton(new ImageIcon("./src/sprites/title.png")); //Title card
+        JButton titleCard = new JButton(new ImageIcon("./src/sprites/titleScreen/title.png")); //Title card
         titleCard.addActionListener(e -> titleScreen(titleScreen));
         titleCard.addActionListener(e -> titleScreen.dispose());
         titleCard.setBorderPainted(false);
-        titleCard.setBounds(0, 16, 256, 128);
+        titleCard.setContentAreaFilled(false);
+        titleCard.setBounds(0,0,256,128);
         titleScreen.add(titleCard);
 
         JButton playButton = fishButton("Play",64, 144); //Play button
@@ -49,7 +50,7 @@ public class Main {
         titleScreen.add(exitButton);
         exitButton.addActionListener(e -> System.exit(0));
 
-        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleBackground.png")); //Background
+        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleScreen/titleBackground.png")); //Background
         background.setBounds(0,0,256,384);
         titleScreen.add(background);
 
@@ -59,7 +60,7 @@ public class Main {
     public static void setting(Component location) {
         JFrame settingScreen = new JFrame("Setting");
         settingScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        settingScreen.setSize(256,384);
+        settingScreen.setSize(272,384);
         settingScreen.setLocationRelativeTo(location);
         settingScreen.setLayout(null);
 
@@ -74,7 +75,7 @@ public class Main {
         back.addActionListener(e -> settingScreen.dispose());
         settingScreen.add(back);
 
-        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleBackground.png")); //Background
+        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleScreen/titleBackground.png")); //Background
         background.setBounds(0,0,256,384);
         settingScreen.add(background);
 
@@ -82,27 +83,75 @@ public class Main {
     }
 
     public static void gameSelect(Component location) {
+        AtomicInteger gamemode = new AtomicInteger(1);
         JFrame gameSelectScreen = new JFrame("Game Select");
         gameSelectScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameSelectScreen.setSize(256, 384);
-        gameSelectScreen.setLocationRelativeTo(null);
+        gameSelectScreen.setLocationRelativeTo(location);
         gameSelectScreen.setLayout(null);
-        JButton button = fishButton("Start!",64,192);
+
+        JLabel gamemodeText = new JLabel("<html> Select a gamemode! </html>"); //Text
+        gamemodeText.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 18));
+        gamemodeText.setForeground(Color.white);
+        gamemodeText.setBounds(16,0,224,64);
+        gameSelectScreen.add(gamemodeText);
+
+        JButton timerMode = new JButton(new ImageIcon("src/sprites/titleScreen/gamemodes/timerModeSelected.png")); //Timer mode
+        timerMode.setBorderPainted(false);
+        timerMode.setContentAreaFilled(false);
+        timerMode.setBounds(16, 64, 64, 64);
+        gameSelectScreen.add(timerMode);
+
+        JButton livesMode = new JButton(new ImageIcon("src/sprites/titleScreen/gamemodes/livesMode.png")); //Lives mode
+        livesMode.setBorderPainted(false);
+        livesMode.setContentAreaFilled(false);
+        livesMode.setBounds(96, 64, 64, 64);
+        gameSelectScreen.add(livesMode);
+
+        JButton scoreMode = new JButton(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreMode.png")); //Score mode
+        scoreMode.setBorderPainted(false);
+        scoreMode.setContentAreaFilled(false);
+        scoreMode.setBounds(172, 64, 64, 64);
+        gameSelectScreen.add(scoreMode);
+
+
+        timerMode.addActionListener(e -> {
+            gamemode.set(1);
+            timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerModeSelected.png"));
+            livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesMode.png"));
+            scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreMode.png"));
+        });
+        livesMode.addActionListener(e -> {
+            gamemode.set(2);
+            timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerMode.png"));
+            livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesModeSelected.png"));
+            scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreMode.png"));
+        });
+        scoreMode.addActionListener(e -> {
+            gamemode.set(3);
+            timerMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/timerMode.png"));
+            livesMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/livesMode.png"));
+            scoreMode.setIcon(new ImageIcon("src/sprites/titleScreen/gamemodes/scoreModeSelected.png"));
+        });
+
+        JButton button = fishButton("Start!",64,208); //Start button
         gameSelectScreen.add(button);
-        button.addActionListener(e -> startGame());
+        button.addActionListener(e -> startGame(gamemode.get()));
         button.addActionListener(e -> gameSelectScreen.dispose());
+
+        JButton back = fishButton("Back",64,272); //Back button
+        back.addActionListener(e -> titleScreen(gameSelectScreen));
+        back.addActionListener(e -> gameSelectScreen.dispose());
+        gameSelectScreen.add(back);
+
+        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleScreen/titleBackground.png")); //Background
+        background.setBounds(0,0,256,384);
+        gameSelectScreen.add(background);
+
         gameSelectScreen.setVisible(true);
     }
-    public static void startGame() {
-        try { //Plays audio
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/test.wav"));
-            Clip clip = AudioSystem.getClip();
-            clip.open(audio);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
-            clip.start();
-        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-            System.out.println(e.getMessage());
-        }
+
+    public static void startGame(int gamemode) {
         JFrame frame = new JFrame("Blastoid Blitz");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1344, 1088);
@@ -119,9 +168,11 @@ public class Main {
         int fish = (int) (Math.random()*14);
         JButton button = new JButton(new ImageIcon("src/sprites/fish/fish" + fish + ".png"));
         button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
         button.setLayout(null);
         JLabel label = new JLabel(text);
         label.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 10));
+        label.setForeground(Color.BLACK);
         if (fish <= 6) {
             button.setBounds(x+12, y, 128, 64);
             label.setBounds(36, 0, 64, 64);

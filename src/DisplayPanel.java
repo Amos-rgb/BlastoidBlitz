@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -37,7 +38,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
-
+        try { //Plays audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/test.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println(e.getMessage());
+        }
         timer.start();
     }
 
