@@ -69,6 +69,11 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
+        try {
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
+        } catch (FontFormatException | IOException _) {}
+
+        g.setFont(new Font("Pirate Treasure Demo", Font.PLAIN, 18));
         g.drawString("Score: " + players[0].getScore() + " : " + players[1].getScore(), 1096, 16);
     }
 

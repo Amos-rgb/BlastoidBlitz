@@ -7,8 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws IOException, FontFormatException {
-        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/titleScreen/pirateFont.otf")));
         titleScreen(null);
         try {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/teto.wav"));
