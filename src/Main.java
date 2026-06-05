@@ -60,7 +60,7 @@ public class Main {
     public static void setting(Component location) {
         JFrame settingScreen = new JFrame("Setting");
         settingScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        settingScreen.setSize(272,384);
+        settingScreen.setSize(256,384);
         settingScreen.setLocationRelativeTo(location);
         settingScreen.setLayout(null);
 

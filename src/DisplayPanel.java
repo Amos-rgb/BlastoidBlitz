@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     private boolean[] pressedKeys;
     private BufferedImage background;
+    private BufferedImage GUIBackground;
     private Timer timer;
     public Player[] players;
     public ArrayList<Space> spaces;
@@ -29,6 +30,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
+            GUIBackground = ImageIO.read(new File("src/sprites/guiBackground.png"));
             background = ImageIO.read(new File("src/sprites/sand.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
@@ -55,13 +57,19 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         super.paintComponent(g);
         for (int i = 0; i < 17; i++) {
             for (int j = 0; j < 17; j++) {
-                g.drawImage(background, i*64, j*64, null); //Draws the background as repeating tiles
+                g.drawImage(background, i * 64, j * 64, null); //Draws the background as repeating tiles
+            }
+        }
+        for (int i = 17; i < 21; i++) {
+            for (int j = 0; j < 17; j++) {
+                g.drawImage(GUIBackground, i * 64, j * 64, null); //Draws the background as repeating tiles
             }
         }
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
+        g.drawString("Score: " + players[0].getScore() + " : " + players[1].getScore(), 1096, 16);
     }
 
     @Override
