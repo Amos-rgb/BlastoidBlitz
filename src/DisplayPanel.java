@@ -38,7 +38,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         this.gamemode = gamemode;
         imminentVictory = false;
         IVMusicStarted = imminentVictory;
-        if (gamemode == 1) clock = 65;
+        if (gamemode == 1) clock = 180;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -92,7 +92,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.5f ));
+        g2d.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.3f ));
         g2d.drawRect(0,0,1344,1088);
         for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 22; j++) {
