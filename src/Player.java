@@ -109,8 +109,9 @@ public class Player extends Space {
     @Override
     public void drawSpace(Graphics g) {
         for (int i = 0; i < effects.length; i++) if (effects[i] > 0) effects[i]--;
+        if (DisplayPanel.imminentVictory && frameWaitTime == 400/DisplayPanel.FRAME_LENGTH) frameWaitTime = 200/DisplayPanel.FRAME_LENGTH;
         if (frameCountdown == 0) {
-            frameCountdown = FRAME_WAIT_TIME;
+            frameCountdown = frameWaitTime;
             frame++;
             frame %= 2;
         }

@@ -15,14 +15,17 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
-    public static final int FRAME_LENGTH = 12;
+    public static final int FRAME_LENGTH = 24;
     private Clip clip;
     private boolean loopStarted;
     private int gamemode;
+    public static boolean imminentVictory;
     private double clock;
     private static boolean[] pressedKeys;
     private BufferedImage background;
     private BufferedImage GUIBackground;
+    private BufferedImage water;
+    private int waterPos;
     private Timer timer;
     public Player[] players;
     public ArrayList<Space> spaces;
@@ -33,7 +36,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public DisplayPanel(int gamemode) {
         this.gamemode = gamemode;
-        if (gamemode == 1) clock = 360;
+        imminentVictory = false;
+        if (gamemode == 1) clock = 65;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -44,11 +48,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         try {
-            GUIBackground = ImageIO.read(new File("src/sprites/guiBackground.png"));
             background = ImageIO.read(new File("src/sprites/sand.png"));
+            GUIBackground = ImageIO.read(new File("src/sprites/guiBackground.png"));
+            water = ImageIO.read(new File("src/sprites/water.png"));
         } catch (IOException e) {
             System.out.println("File not found!");
         }
+        waterPos = 0;
         timer = new Timer(FRAME_LENGTH,e -> updateGame()); //24ms delay = about 41 fps
         addMouseListener(this);
         addKeyListener(this);
@@ -56,9 +62,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         requestFocusInWindow();
         loopStarted = false;
         try { //Plays audio
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleThemeIntro.wav"));
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
@@ -84,11 +91,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
 
-        g.setColor(new Color(15,94,156,64));
-        g.fillRect(0,0,1088,1088);
         g.setFont(new Font("Little Fish", Font.PLAIN, 64));
         g.setColor(Color.white);
-        g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format(clock%60) + new DecimalFormat(".000").format(clock%1),512,52);
+        g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format((int) clock%60),512,52);
         g.setFont(new Font("Little Fish", Font.PLAIN, 36));
         for (int i = 0; i < players.length; i++) { //Draws player info
             g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
@@ -97,6 +102,19 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
             else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
         }
+
+        AlphaComposite ac = AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.5f );
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setComposite(ac);
+        g2d.drawRect(0,0,1344,1088);
+        for (int i = 0; i < 22; i++) {
+            for (int j = 0; j < 22; j++) {
+                g2d.drawImage(water, (i * 64) + waterPos-64, (j * 64) + waterPos-64, null); //Draws the water filter as repeating tiles
+            }
+        }
+        if (imminentVictory) waterPos += 2;
+        else waterPos++;
+        waterPos%=64;
     }
 
     @Override
@@ -131,7 +149,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public void mouseExited(MouseEvent e) {}
 
     private void movePlayers() {
-        int moveAmount = 64/8; //64 over the amount of frames it takes to move one space
+        int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
         players[0].setMoveAmount(0, 0);
         if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
@@ -159,18 +177,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void updateGame() {
-        if (((clock < 347.3 && gamemode == 1) || (clock > 12.7 && gamemode != 1)) && !loopStarted) {
-            try { //Plays audio
-                AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
-                clip = AudioSystem.getClip();
-                clip.open(audio);
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-                clip.start();
-                loopStarted = true;
-            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                System.out.println(e.getMessage());
-            }
-        }
+        checkWinCondition();
         regenerateSpaces();
         movePlayers();
         checkExplosions();
@@ -305,10 +312,25 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkWinCondition() {
-        if (gamemode == 1 && clock <= 0) System.exit(0);
+        if (gamemode == 1) {
+             if (clock <= 0)
+                System.exit(0);
+             else if (clock <= 60)
+                 imminentVictory = true;
+        }
         for (Player player : players) {
-            if (gamemode == 2 && player.getLives() == 0) System.exit(0);
-            if (gamemode == 3 && player.getScore() >= 10) System.exit(0);
+            if (gamemode == 2) {
+                 if (player.getLives() == 0)
+                    System.exit(0);
+                 else if (player.getLives() == 1)
+                     imminentVictory = true;
+            }
+            if (gamemode == 3) {
+                if (player.getScore() == 10)
+                    System.exit(0);
+                else if (player.getScore() == 9)
+                    imminentVictory = true;
+            }
         }
     }
 

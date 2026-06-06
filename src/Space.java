@@ -1,8 +1,5 @@
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Space {
     Rectangle bounds;
@@ -12,17 +9,19 @@ public class Space {
     boolean isTrap;
     BufferedImage[] sprites;
     int frame;
-    final int FRAME_WAIT_TIME = 400/DisplayPanel.FRAME_LENGTH; //Frames before a sprite's frame is updated
+    int frameWaitTime; //Frames before a sprite's frame is updated
     int frameCountdown;
 
     public Space (int x, int y){
         bounds = new Rectangle(x,y,64,64);
-        frameCountdown = FRAME_WAIT_TIME;
+        frameWaitTime = 400/DisplayPanel.FRAME_LENGTH;
+        frameCountdown = frameWaitTime;
     }
 
     public void drawSpace(Graphics g) {
+        if (DisplayPanel.imminentVictory && frameWaitTime == 400/DisplayPanel.FRAME_LENGTH && this.getClass() != Bomb.class) frameWaitTime = 200/DisplayPanel.FRAME_LENGTH;
         if (frameCountdown == 0) {
-            frameCountdown = FRAME_WAIT_TIME;
+            frameCountdown = frameWaitTime;
             frame++;
             frame %= sprites.length;
         }
