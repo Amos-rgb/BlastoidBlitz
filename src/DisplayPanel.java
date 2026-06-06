@@ -17,9 +17,9 @@ import java.util.Date;
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     public static final int FRAME_LENGTH = 24;
     private Clip clip;
-    private boolean loopStarted;
     private int gamemode;
     public static boolean imminentVictory;
+    private boolean IVMusicStarted;
     private double clock;
     private static boolean[] pressedKeys;
     private BufferedImage background;
@@ -37,6 +37,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public DisplayPanel(int gamemode) {
         this.gamemode = gamemode;
         imminentVictory = false;
+        IVMusicStarted = imminentVictory;
         if (gamemode == 1) clock = 65;
         else clock = 0;
         pressedKeys = new boolean[128];
@@ -60,7 +61,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
-        loopStarted = false;
         try { //Plays audio
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
             clip = AudioSystem.getClip();
@@ -91,21 +91,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
 
-        g.setFont(new Font("Little Fish", Font.PLAIN, 64));
-        g.setColor(Color.white);
-        g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format((int) clock%60),512,52);
-        g.setFont(new Font("Little Fish", Font.PLAIN, 36));
-        for (int i = 0; i < players.length; i++) { //Draws player info
-            g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
-            g.drawString("W, A, S, D, Q", 1096, 80+(i*200));
-            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*200));
-            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
-            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
-        }
-
-        AlphaComposite ac = AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.5f );
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setComposite(ac);
+        g2d.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.5f ));
         g2d.drawRect(0,0,1344,1088);
         for (int i = 0; i < 22; i++) {
             for (int j = 0; j < 22; j++) {
@@ -115,6 +102,20 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         if (imminentVictory) waterPos += 2;
         else waterPos++;
         waterPos%=64;
+
+        g2d.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 1f ));
+        g.setFont(new Font("Little Fish", Font.PLAIN, 64));
+        if (imminentVictory && clock%2 < 1) g.setColor(Color.red);
+        else g.setColor(Color.white);
+        g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format((int) clock%60),512,52);
+        g.setFont(new Font("Little Fish", Font.PLAIN, 36));
+        for (int i = 0; i < players.length; i++) { //Draws player info
+            g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
+            g.drawString("W, A, S, D, Q", 1096, 80+(i*200));
+            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*200));
+            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
+            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
+        }
     }
 
     @Override
@@ -331,6 +332,19 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 else if (player.getScore() == 9)
                     imminentVictory = true;
             }
+        }
+        if (imminentVictory && !IVMusicStarted) {
+            clip.stop();
+            try { //Plays audio
+                AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/imminentVictory.wav"));
+                clip = AudioSystem.getClip();
+                clip.open(audio);
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+                clip.start();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+                System.out.println(e.getMessage());
+            }
+            IVMusicStarted = true;
         }
     }
 
