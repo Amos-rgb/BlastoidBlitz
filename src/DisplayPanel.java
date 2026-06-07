@@ -27,6 +27,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public int spaceCountdown;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
+    private ArrayList<Enemy> enemies;
     private int tikTok;//a variable to exam if a timer is triggered
 
     public DisplayPanel(int gamemode) {
@@ -43,6 +44,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         spaceCountdown = 0;
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
+        enemies = new ArrayList<>();
         try {
             background = ImageIO.read(new File("src/sprites/sand.png"));
             GUIBackground = ImageIO.read(new File("src/sprites/guiBackground.png"));
@@ -83,6 +85,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         }
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
+        for (Enemy enemy : enemies) enemy.drawSpace(g); //Draws all players
         for (Player player : players) player.drawSpace(g); //Draws all players
         for (Explosion explosion : explosions) explosion.drawSpace(g); //Draws all explosions
 
@@ -179,6 +182,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         movePlayers();
         checkExplosions();
         checkBombs();
+        for (Enemy enemy : enemies) {
+            if (enemy.randomlyMove()) {
+                bombs.add(new Bomb(enemy));
+            }
+            movePlayer(enemy);
+        }
         repaint();
         if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
         else clock += FRAME_LENGTH*0.001;
@@ -272,12 +281,26 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (int j = 0; j < spaces.size(); j++) {
                     Space space = spaces.get(j);
                     if (explosion.bounds.intersects(space.bounds)) //Checks all spaces to see if they are on the same space as the explosion
-                        if (space.destroyable) spaces.remove(space); //Otherwise, removes the space
+                        if (space.destroyable) {
+                            spaces.remove(space); //Otherwise, removes the space
+                            j--;
+                        }
                 }
                 for (Player player : players) {
                     if (player.bounds.intersects(explosion.bounds))
                         if (player.damage() && player != explosion.getPlayer())
                             explosion.getPlayer().addScore();
+                }
+                for (int j = 0; j < enemies.size(); j++) {
+                    Enemy enemy = enemies.get(j);
+                    if (enemy.bounds.intersects(explosion.bounds))
+                        if (enemy.destroyable) {
+                            for (Player player : players) {
+                                if (player == explosion.getPlayer()) player.addScore();
+                            }
+                            enemies.remove(enemy);
+                            j--;
+                        }
                 }
             }
             if (explosion.canDisappear()) { //Checks all explosions to see if their countdown has finished
@@ -288,7 +311,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public void regenerateSpaces() {
         if (spaceCountdown <= 0) {
-            if (spaces.size() < 200) {
+            if (spaces.size() < 2000) {
                 spaceCountdown = 1000/FRAME_LENGTH;//1 sec
                 Rectangle bounds = randomSpace();
                 for (Space space : spaces) {
@@ -300,9 +323,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (Player player : players) {
                     if (bounds.intersects(player.bounds)) return;
                 }
-                if (Math.random() > 0.3)
+                double rand = Math.random();
+                if (rand > 0.5)
                     spaces.add(new Destructible(bounds.x, bounds.y));
-                else spaces.add(new Destructible(bounds.x, bounds.y, true));
+                else if (rand>0.2)
+                    enemies.add(new Enemy(bounds.x,bounds.y));
+                else
+                    spaces.add(new Destructible(bounds.x,bounds.y,true));
             }
         }
         spaceCountdown--;

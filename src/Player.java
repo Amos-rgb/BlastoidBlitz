@@ -7,13 +7,13 @@ import java.io.IOException;
 public class Player extends Space {
     private final int START_X;
     private final int START_Y;
-    private int maxHealth;
-    private int health;
+    int maxHealth;
+    int health;
     private int score;
     public int lives;
     private int maxBombs;
-    private int xMoveAmount;
-    private int yMoveAmount;
+    int xMoveAmount;
+    int yMoveAmount;
     public int[] effects;
     /* Immunity: 0
     * Ice physics: 1
@@ -26,12 +26,30 @@ public class Player extends Space {
         START_Y = y;
         collision = true;
         destroyable = false;
-        sprites = new BufferedImage[2];
+        sprites = new BufferedImage[20];
         try {
-            sprites[0] = ImageIO.read(new File("src/realisticPack/johndown.png"));
-            sprites[1] = ImageIO.read(new File("src/realisticPack/johnup.png"));
+            sprites[0] = ImageIO.read(new File("src/sprites/starfish/starfishUp1.png"));
+            sprites[1] = ImageIO.read(new File("src/sprites/starfish/starfishRight1.png"));
+            sprites[2] = ImageIO.read(new File("src/sprites/starfish/starfishDown1.png"));
+            sprites[3] = ImageIO.read(new File("src/sprites/starfish/starfishLeft1.png"));
+            for (int i = 0; i < 3; i++) {
+                sprites[i+4] = ImageIO.read(new File("src/sprites/starfish/starfishUp" + i + ".png"));
+            }
+            sprites[7] = ImageIO.read(new File("src/sprites/starfish/starfishUp1.png"));
+            for (int i = 0; i < 3; i++) {
+                sprites[i+8] = ImageIO.read(new File("src/sprites/starfish/starfishLeft" + i + ".png"));
+            }
+            sprites[11] = ImageIO.read(new File("src/sprites/starfish/starfishLeft1.png"));
+            for (int i = 0; i < 3; i++) {
+                sprites[i+12] = ImageIO.read(new File("src/sprites/starfish/starfishRight" + i + ".png"));
+            }
+            sprites[15] = ImageIO.read(new File("src/sprites/starfish/starfishRight1.png"));
+            for (int i = 0; i < 3; i++) {
+                sprites[i+16] = ImageIO.read(new File("src/sprites/starfish/starfishDown" + i + ".png"));
+            }
+            sprites[19] = ImageIO.read(new File("src/sprites/starfish/starfishDown1.png"));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
         frame = 0;
         maxHealth = 1;
@@ -43,7 +61,7 @@ public class Player extends Space {
         effects[0] = 125; //3secs
     }
 
-    public boolean damage() { //If the player does not have immunity, ecreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
+    public boolean damage() { //If the player does not have immunity, decreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
         if (effects[0] == 0) {
             health--;
             effects[0] = 125;
@@ -91,6 +109,14 @@ public class Player extends Space {
 
     public int getyMoveAmount() {return yMoveAmount;}
 
+    public int getDirection() {
+        if (yMoveAmount < 0) return 1;
+        if (xMoveAmount < 0) return 2;
+        if (xMoveAmount > 0) return 3;
+        if (yMoveAmount > 0) return 4;
+        return 0;
+    }
+
     public boolean isOnGrid() {
         return bounds.x % 64 == 0 && bounds.y % 64 == 0;
     }
@@ -113,10 +139,10 @@ public class Player extends Space {
         if (frameCountdown == 0) {
             frameCountdown = frameWaitTime;
             frame++;
-            frame %= 2;
+            frame %= 4;
         }
         if (effects[2] == 0) {
-            g.drawImage(sprites[frame],bounds.x,bounds.y, null);
+            g.drawImage(sprites[frame+(4*getDirection())],bounds.x,bounds.y, null);
         } else {
             try {
                 BufferedImage b = ImageIO.read(new File("src/sprites/trappedPlayerInBubble.png"));
