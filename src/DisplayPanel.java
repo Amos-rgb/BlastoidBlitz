@@ -115,7 +115,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         try {
             BufferedImage kelp = ImageIO.read(new File("src/sprites/kelp/kelp0.png"));
             g.drawImage(kelp,1096,400,null);
-            //g.drawString("Spawn Area: Prevents explosions and other players", 1096, 440);
             BufferedImage rock = ImageIO.read(new File("src/sprites/rock.png"));
             g.drawImage(rock,1096,528,null);
             BufferedImage barrel = ImageIO.read(new File("src/sprites/barrel.png"));
@@ -125,6 +124,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        g.drawString("Spawn Area", 1168, 440);
+        g.drawString("Rock", 1168, 568);
+        g.drawString("Barrel", 1168, 696);
+        g.drawString("Bubble", 1168, 824);
+        g.setFont(new Font("Little Fish", Font.PLAIN, 18));
+        g.drawString("Prevents explosions and other players", 1096, 484);
+        g.drawString("Indestructible obstacle", 1096, 612);
+        g.drawString("Destructible obstacle", 1096, 740);
+        g.drawString("Various power-ups/traps", 1096, 868);
     }
 
     @Override
@@ -255,16 +263,18 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             Bomb bomb = bombs.get(i);
             if (!bomb.bounds.intersects(bomb.getPlayer().bounds) && !bomb.collision) bomb.collision = true;
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
-                for (int x = bomb.bounds.x-blastRadius*64; x <= bomb.bounds.x+blastRadius*64; x += 64) {
-                    for (int y = bomb.bounds.y-blastRadius*64; y <= bomb.bounds.y+blastRadius*64; y += 64) {
+                int bombX = bomb.bounds.x;
+                int bombY = bomb.bounds.y;
+                for (int x = -blastRadius*64; x <= blastRadius*64; x += 64) {
+                    for (int y = -blastRadius*64; y <= blastRadius*64; y += 64) {
                         boolean isSpawnArea = false;
                         for (Space space : spaces) {
-                            if (space.bounds.x == x && space.bounds.y == y && space.getClass() == SpawnArea.class) {
+                            if (space.bounds.x == bombX + x && space.bounds.y == bombY + y && space.getClass() == SpawnArea.class) {
                                 isSpawnArea = true; //If the space is a spawn area, does not create explosion
                                 break;
                             }
                         }
-                        if (!isSpawnArea && (x == bomb.bounds.x || y == bomb.bounds.y)) explosions.add(new Explosion(x,y, bomb.getPlayer())); //Creates explosions in a square around the exploded bomb
+                        if (!isSpawnArea && (Math.abs(x+y) <= blastRadius*64 && Math.abs(x-y) <= blastRadius*64)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a square around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
@@ -298,8 +308,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void regenerateSpaces() {
-        if (spaceCountdown == 0) {
-            if (spaces.size() < 250) {
+        if (spaceCountdown <= 0) {
+            if (spaces.size() < 200) {
+                spaceCountdown = 1000/FRAME_LENGTH;//1 sec
                 Rectangle bounds = randomSpace();
                 for (Space space : spaces) {
                     if (bounds.intersects(space.bounds)) return;
@@ -310,12 +321,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (Player player : players) {
                     if (bounds.intersects(player.bounds)) return;
                 }
-                if (Math.random() > 0.3){
+                if (Math.random() > 0.3)
                     spaces.add(new Destructible(bounds.x, bounds.y));
-            }else {
-                spaces.add(new Destructible(bounds.x, bounds.y, true));
-            }
-                spaceCountdown = 1000/FRAME_LENGTH;//1 sec
+                else spaces.add(new Destructible(bounds.x, bounds.y, true));
             }
         }
         spaceCountdown--;
