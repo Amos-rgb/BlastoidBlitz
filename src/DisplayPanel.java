@@ -6,13 +6,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.DecimalFormat;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     public static final int FRAME_LENGTH = 24;
@@ -111,10 +106,24 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         g.setFont(new Font("Little Fish", Font.PLAIN, 36));
         for (int i = 0; i < players.length; i++) { //Draws player info
             g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
-            g.drawString("W, A, S, D, Q", 1096, 80+(i*200));
             g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*200));
             if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
             else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
+        }
+        g.drawString("W, A, S, D, Q", 1096, 80);
+        g.drawString("Arrow Keys, /", 1096, 280);
+        try {
+            BufferedImage kelp = ImageIO.read(new File("src/sprites/kelp/kelp0.png"));
+            g.drawImage(kelp,1096,400,null);
+            //g.drawString("Spawn Area: Prevents explosions and other players", 1096, 440);
+            BufferedImage rock = ImageIO.read(new File("src/sprites/rock.png"));
+            g.drawImage(rock,1096,528,null);
+            BufferedImage barrel = ImageIO.read(new File("src/sprites/barrel.png"));
+            g.drawImage(barrel,1096,656,null);
+            BufferedImage bubble = ImageIO.read(new File("src/sprites/bubble.png"));
+            g.drawImage(bubble,1096,784,null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

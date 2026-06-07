@@ -10,7 +10,7 @@ public class Destructible extends Space {
         destroyable = true;
         sprites = new BufferedImage[1];
         try {
-            sprites[0] = ImageIO.read(new File("src/sprites/wood.png"));
+            sprites[0] = ImageIO.read(new File("src/sprites/barrel.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
