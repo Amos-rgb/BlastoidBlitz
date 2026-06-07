@@ -171,7 +171,6 @@ public class Main {
         generator.printMap(panel);
         frame.add(panel);
         frame.setVisible(true);
-        System.out.println(panel.spaces.size());
     }
 
     public static JButton fishButton(String text, int x, int y) {

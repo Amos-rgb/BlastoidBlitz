@@ -112,27 +112,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         }
         g.drawString("W, A, S, D, Q", 1096, 80);
         g.drawString("Arrow Keys, /", 1096, 280);
-        try {
-            BufferedImage kelp = ImageIO.read(new File("src/sprites/kelp/kelp0.png"));
-            g.drawImage(kelp,1096,400,null);
-            BufferedImage rock = ImageIO.read(new File("src/sprites/rock.png"));
-            g.drawImage(rock,1096,528,null);
-            BufferedImage barrel = ImageIO.read(new File("src/sprites/barrel.png"));
-            g.drawImage(barrel,1096,656,null);
-            BufferedImage bubble = ImageIO.read(new File("src/sprites/bubble.png"));
-            g.drawImage(bubble,1096,784,null);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        g.drawString("Spawn Area", 1168, 440);
-        g.drawString("Rock", 1168, 568);
-        g.drawString("Barrel", 1168, 696);
-        g.drawString("Bubble", 1168, 824);
-        g.setFont(new Font("Little Fish", Font.PLAIN, 18));
-        g.drawString("Prevents explosions and other players", 1096, 484);
-        g.drawString("Indestructible obstacle", 1096, 612);
-        g.drawString("Destructible obstacle", 1096, 740);
-        g.drawString("Various power-ups/traps", 1096, 868);
     }
 
     @Override
