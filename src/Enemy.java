@@ -36,23 +36,55 @@ public class Enemy extends Player {
     public boolean randomlyMove() {
         if (isOnGrid()) {
             double rand = Math.random();
-            if (rand < 0.1) {
+            if (rand < 0.05) {
                 xMoveAmount = 0;
                 yMoveAmount = -16;
-            } else if (rand < 0.2) {
+            } else if (rand < 0.10) {
                 xMoveAmount = -16;
                 yMoveAmount = 0;
-            } else if (rand < 0.3) {
+            } else if (rand < 0.15) {
                 xMoveAmount = 16;
                 yMoveAmount = 0;
-            } else if (rand < 0.4) {
+            } else if (rand < 0.20) {
                 xMoveAmount = 0;
                 yMoveAmount = 16;
-            } else if (rand < 0.41){
+            } else if (rand < 0.205){ //0.5% chance of placing bomb
                 return true;
             } else {
                 xMoveAmount = 0;
                 yMoveAmount = 0;
+            }
+        }
+        return false;
+    }
+
+    public int playerDistance(Player player) {
+        return playerXDistance(player) + playerYDistance(player);
+    }
+
+    public int playerXDistance(Player player) {
+        return Math.abs(bounds.x-player.bounds.x);
+    }
+
+    public int playerYDistance(Player player) {
+        return Math.abs(bounds.x-player.bounds.x);
+    }
+
+    public boolean moveTowardsPlayer(Player player) {
+        if (isOnGrid()) {
+            if (playerDistance(player) < 128) {
+                return true;
+            }
+            if (playerXDistance(player) < playerYDistance(player)) {
+                if (player.bounds.y > bounds.y) {
+                    yMoveAmount = 16;
+                } else {
+                    yMoveAmount = -16;
+                }
+            } else if (player.bounds.x > bounds.x) {
+                xMoveAmount = 16;
+            } else {
+                xMoveAmount = -16;
             }
         }
         return false;

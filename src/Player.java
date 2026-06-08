@@ -126,6 +126,10 @@ public class Player extends Space {
             bounds.x += x;
             bounds.y += y;
         }
+         if (!isOnGrid() && xMoveAmount == 0 && yMoveAmount == 0) {
+             bounds.x = (bounds.x/64)*64;
+             bounds.y = (bounds.y/64)*64;
+         }
     }
 
     public void inflict(int effect, int frames) {

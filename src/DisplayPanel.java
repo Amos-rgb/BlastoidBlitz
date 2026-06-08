@@ -192,9 +192,11 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     private void moveEnemies() {
         for (Enemy enemy : enemies) {
-            if (enemy.randomlyMove()) {
-                bombs.add(new Bomb(enemy));
-            }
+            System.out.println(enemy.playerDistance(players[0]));
+            if (enemy.playerDistance(players[0]) > enemy.playerDistance(players[1]))
+                if (enemy.moveTowardsPlayer(players[1])) bombs.add(new Bomb(enemy));
+            else
+                if (enemy.moveTowardsPlayer(players[0])) bombs.add(new Bomb(enemy));
             movePlayer(enemy);
         }
     }
@@ -205,16 +207,16 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         player.movePlayer(x,y); //Moves the selected player by the desired amount
         for (Bomb bomb : bombs) {
             if ((bomb.collision || bomb.getPlayer() != player) && player.bounds.intersects(bomb.bounds)) { //Returns to original position when colliding with bomb
-                player.setMoveAmount();
                 player.movePlayer(-x,-y);
+                player.setMoveAmount();
                 return;
             }
         }
         for (Player player1 : players) {
             if (player != player1 && player.bounds.intersects(player1.bounds)) { //Returns to original position when colliding with player
                 if (player1.collision) {
-                    player.setMoveAmount();
                     player.movePlayer(-x,-y);
+                    player.setMoveAmount();
                     return;
                 }
             }
@@ -222,6 +224,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Enemy enemy : enemies) {
             if (player != enemy && player.bounds.intersects(enemy.bounds)) { //Returns to original position when colliding with player
                 if (enemy.collision) {
+                    if (player.getClass() == Player.class) player.damage();
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
@@ -338,9 +341,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     if (bounds.intersects(player.bounds)) return;
                 }
                 double rand = Math.random();
-                if (rand > 0.5)
+                if (rand > 0.9)
                     spaces.add(new Destructible(bounds.x, bounds.y));
-                else if (rand>0.2)
+                else if (rand>0.1)
                     enemies.add(new Enemy(bounds.x,bounds.y));
                 else
                     spaces.add(new Destructible(bounds.x,bounds.y,true));
