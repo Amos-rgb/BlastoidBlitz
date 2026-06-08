@@ -67,12 +67,12 @@ public class Enemy extends Player {
     }
 
     public int playerYDistance(Player player) {
-        return Math.abs(bounds.x-player.bounds.x);
+        return Math.abs(bounds.y-player.bounds.y);
     }
 
     public boolean moveTowardsPlayer(Player player) {
         if (isOnGrid()) {
-            if (playerDistance(player) < 128) {
+            if (playerDistance(player) == 64) {
                 return true;
             }
             if (playerXDistance(player) < playerYDistance(player)) {

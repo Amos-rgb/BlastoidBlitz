@@ -6,7 +6,6 @@ public class Space {
 
     boolean collision; //Whether the space should prevent a player from moving on to it (true for Players and Immovables, false for Bombs and Explosions)
     boolean destroyable; //Whether the space can be destroyed by bombs
-    boolean isTrap;
     BufferedImage[] sprites;
     int frame;
     int frameWaitTime; //Frames before a sprite's frame is updated

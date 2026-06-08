@@ -73,7 +73,7 @@ public class MazeGenerator {
             for (int x = 1; x < COLS - 1; x++) {
                 // 65% chance block
                 if (map[y][x] == EMPTY) {
-                    if (random.nextDouble() < 0.2) {
+                    if (random.nextDouble() < 0.5) {
                         map[y][x] = BLOCK;
                     }
                 }

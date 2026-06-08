@@ -34,7 +34,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         this.gamemode = gamemode;
         imminentVictory = false;
         IVMusicStarted = imminentVictory;
-        if (gamemode == 1) clock = 240;
+        if (gamemode == 1) clock = 300;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -109,13 +109,17 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         g.drawString((int) clock/60 + ":" + new DecimalFormat("00").format((int) clock%60),512,52);
         g.setFont(new Font("Little Fish", Font.PLAIN, 36));
         for (int i = 0; i < players.length; i++) { //Draws player info
-            g.drawString("Player " + (i+1) + ":", 1096, 40+(i*200));
-            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*200));
-            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*200));
-            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*200));
+            g.drawString("Player " + (i+1) + ":", 1096, 40+(i*512));
+            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*512));
+            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*512));
+            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*512));
+            g.drawString("Effects:", 1096, 200+(i*512));
+            for (int j = 0; j < Effect.effects.length; j++) {
+                //if (g.drawString();
+            }
         }
         g.drawString("W, A, S, D, Q", 1096, 80);
-        g.drawString("Arrow Keys, /", 1096, 280);
+        g.drawString("Arrow Keys, /", 1096, 592);
     }
 
     @Override
@@ -192,11 +196,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     private void moveEnemies() {
         for (Enemy enemy : enemies) {
-            System.out.println(enemy.playerDistance(players[0]));
             if (enemy.playerDistance(players[0]) > enemy.playerDistance(players[1]))
-                if (enemy.moveTowardsPlayer(players[1])) bombs.add(new Bomb(enemy));
+                if (enemy.moveTowardsPlayer(players[1])) addBomb(enemy);
             else
-                if (enemy.moveTowardsPlayer(players[0])) bombs.add(new Bomb(enemy));
+                if (enemy.moveTowardsPlayer(players[0])) addBomb(enemy);
             movePlayer(enemy);
         }
     }
@@ -224,7 +227,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Enemy enemy : enemies) {
             if (player != enemy && player.bounds.intersects(enemy.bounds)) { //Returns to original position when colliding with player
                 if (enemy.collision) {
-                    if (player.getClass() == Player.class) player.damage();
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
@@ -238,11 +240,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
-                }else{
-                    if (space.isTrap && player.isOnGrid()) {
-                        player.inflict(2,3000/FRAME_LENGTH);
-                        spaces.remove(space);
-                    }
+                }
+                if (space.getClass() == EffectSpace.class && player.isOnGrid()) {
+                    player.inflict(((EffectSpace) space).effect);
+                    spaces.remove(space);
                 }
                 if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
                     player.setMoveAmount();
@@ -341,12 +342,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     if (bounds.intersects(player.bounds)) return;
                 }
                 double rand = Math.random();
-                if (rand > 0.9)
+                if (rand > 0.5)
                     spaces.add(new Destructible(bounds.x, bounds.y));
-                else if (rand>0.1)
+                else if (rand>0.25)
                     enemies.add(new Enemy(bounds.x,bounds.y));
                 else
-                    spaces.add(new Destructible(bounds.x,bounds.y,true));
+                    spaces.add(new EffectSpace(bounds.x,bounds.y));
             }
         }
         spaceCountdown--;
@@ -367,7 +368,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                      imminentVictory = true;
             }
             if (gamemode == 3) {
-                if (player.getScore() == 10)
+                if (player.getScore() >= 10)
                     System.exit(0);
                 else if (player.getScore() == 9)
                     imminentVictory = true;

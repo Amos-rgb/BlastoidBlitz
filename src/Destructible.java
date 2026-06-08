@@ -16,18 +16,4 @@ public class Destructible extends Space {
         }
         frame = 0;
     }
-
-    public Destructible(int x, int y, boolean Trap) {
-        super(x,y);
-        collision = false;
-        destroyable = true;
-        isTrap=Trap;
-        sprites = new BufferedImage[1];
-        try {
-            sprites[0] = ImageIO.read(new File("src/sprites/bubble.png"));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        frame = 0;
-    }
 }

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Player extends Space {
     private final int START_X;
@@ -11,15 +12,10 @@ public class Player extends Space {
     int health;
     private int score;
     public int lives;
-    private int maxBombs;
+    int maxBombs;
     int xMoveAmount;
     int yMoveAmount;
     public int[] effects;
-    /* Immunity: 0
-    * Ice physics: 1
-    * Trapped: 2
-    *
-    * */
     public Player(int x, int y) {
         super(x,y);
         START_X = x;
@@ -58,13 +54,13 @@ public class Player extends Space {
         lives = 10;
         maxBombs = 2;
         effects = new int[10];
-        effects[0] = 125; //3secs
+        this.inflict(0);
     }
 
     public boolean damage() { //If the player does not have immunity, decreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
         if (effects[0] == 0) {
             health--;
-            effects[0] = 125;
+            this.inflict(0);
             if (health == 0) {
                 health = maxHealth;
                 bounds.x = START_X;
@@ -132,8 +128,8 @@ public class Player extends Space {
          }
     }
 
-    public void inflict(int effect, int frames) {
-        effects[effect] += frames;
+    public void inflict(int effect) {
+        effects[effect] += Effect.effects[effect].frames;
     }
 
     @Override
