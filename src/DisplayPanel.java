@@ -34,7 +34,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         this.gamemode = gamemode;
         imminentVictory = false;
         IVMusicStarted = imminentVictory;
-        if (gamemode == 1) clock = 180;
+        if (gamemode == 1) clock = 240;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -62,6 +62,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
+            clip.setLoopPoints(clip.getFrameLength()/9,clip.getFrameLength()-50000);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
@@ -148,6 +149,19 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     @Override
     public void mouseExited(MouseEvent e) {}
 
+    public void updateGame() {
+        checkWinCondition();
+        regenerateSpaces();
+        movePlayers();
+        moveEnemies();
+        checkExplosions();
+        checkBombs();
+        repaint();
+        if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
+        else clock += FRAME_LENGTH*0.001;
+        tikTok++;
+    }
+
     private void movePlayers() {
         int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
@@ -176,22 +190,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         movePlayer(players[1]);
     }
 
-    public void updateGame() {
-        checkWinCondition();
-        regenerateSpaces();
-        movePlayers();
-        checkExplosions();
-        checkBombs();
+    private void moveEnemies() {
         for (Enemy enemy : enemies) {
             if (enemy.randomlyMove()) {
                 bombs.add(new Bomb(enemy));
             }
             movePlayer(enemy);
         }
-        repaint();
-        if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
-        else clock += FRAME_LENGTH*0.001;
-        tikTok++;
     }
 
     public void movePlayer(Player player) {
@@ -199,7 +204,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         int y = player.getyMoveAmount();
         player.movePlayer(x,y); //Moves the selected player by the desired amount
         for (Bomb bomb : bombs) {
-            if (bomb.collision && player.bounds.intersects(bomb.bounds)) { //Returns to original position when colliding with bomb
+            if ((bomb.collision || bomb.getPlayer() != player) && player.bounds.intersects(bomb.bounds)) { //Returns to original position when colliding with bomb
                 player.setMoveAmount();
                 player.movePlayer(-x,-y);
                 return;
@@ -208,6 +213,15 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player1 : players) {
             if (player != player1 && player.bounds.intersects(player1.bounds)) { //Returns to original position when colliding with player
                 if (player1.collision) {
+                    player.setMoveAmount();
+                    player.movePlayer(-x,-y);
+                    return;
+                }
+            }
+        }
+        for (Enemy enemy : enemies) {
+            if (player != enemy && player.bounds.intersects(enemy.bounds)) { //Returns to original position when colliding with player
+                if (enemy.collision) {
                     player.setMoveAmount();
                     player.movePlayer(-x,-y);
                     return;
@@ -262,7 +276,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                                 break;
                             }
                         }
-                        if (!isSpawnArea && (Math.abs(x+y) <= blastRadius*64 && Math.abs(x-y) <= blastRadius*64)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a square around the exploded bomb
+                        if (!isSpawnArea && (Math.abs(x+y) <= blastRadius*64 && Math.abs(x-y) <= blastRadius*64)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a diamond around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
@@ -375,4 +389,3 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         return new Rectangle((int) (Math.random()*17)*64, (int) (Math.random()*17)*64, 64, 64);
     }
 }
-

@@ -6,16 +6,22 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
-    public static void main(String[] args) throws IOException, FontFormatException {
-        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/fishFont.otf")));
-        titleScreen(null);
-        try {
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(""));
-            Clip clip = AudioSystem.getClip();
+    static Clip clip;
+    public static void main(String[] args) {
+        try { //Plays audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/titleScreen.wav"));
+            clip = AudioSystem.getClip();
             clip.open(audio);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
+        }
+        try { //Sets font
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/sprites/fishFont.otf")));
+            titleScreen(null);
+        } catch (IOException | FontFormatException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -165,6 +171,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1344, 1088);
         frame.setLocationRelativeTo(null);
+        clip.stop();
         DisplayPanel panel = new DisplayPanel(gamemode);
         MazeGenerator generator = new MazeGenerator(17, 17, 1088);
         generator.generate();
