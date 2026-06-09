@@ -3,14 +3,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Player extends Space {
     private final int START_X;
     private final int START_Y;
     int maxHealth;
     int health;
-    private int score;
+    int score;
     public int lives;
     public int moveSpeed;
     int maxBombs;
@@ -19,6 +18,13 @@ public class Player extends Space {
     int xMoveAmount;
     int yMoveAmount;
     public int[] effects;
+    int totalBombsPlaced;
+    int playersDefeated;
+    int enemiesDefeated;
+    int spacesDestroyed;
+    int effectSpacesLandedOn;
+    int selfKills;
+    int spacesWalked;
     public Player(int x, int y) {
         super(x,y);
         START_X = x;
@@ -77,14 +83,6 @@ public class Player extends Space {
         return false;
     }
     public void addScore() {score++;} //Adds 1 to the player's score
-
-    public int getScore() {return score;}
-
-    public int getHealth() {return health;}
-
-    public int getMaxHealth() {return maxHealth;}
-
-    public int getLives() {return lives;}
 
 
     public void setMoveAmount(int x, int y) {

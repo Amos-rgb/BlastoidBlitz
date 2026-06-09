@@ -1,18 +1,22 @@
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     static Clip clip;
+    static boolean resultsScreenOpened;
     public static void main(String[] args) {
+        resultsScreenOpened = false;
         try { //Plays audio
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/titleScreen.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.setLoopPoints(0,clip.getFrameLength()-70000);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
@@ -168,16 +172,83 @@ public class Main {
 
     public static void startGame(int gamemode) {
         JFrame frame = new JFrame("Blastoid Blitz");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.setSize(1344, 1088);
         frame.setLocationRelativeTo(null);
         clip.stop();
-        DisplayPanel panel = new DisplayPanel(gamemode);
+        DisplayPanel panel = new DisplayPanel(gamemode, frame);
         MazeGenerator generator = new MazeGenerator(17, 17, 1088);
         generator.generate();
         generator.printMap(panel);
         frame.add(panel);
         frame.setVisible(true);
+        frame.addWindowListener(new WindowListener() {
+            public void windowOpened(WindowEvent e) {}
+            public void windowClosing(WindowEvent e) {
+                if (!resultsScreenOpened) resultsScreen(frame,panel);
+            }
+
+            public void windowClosed(WindowEvent e) {}
+            public void windowIconified(WindowEvent e) {}
+            public void windowDeiconified(WindowEvent e) {}
+            public void windowActivated(WindowEvent e) {
+
+            }
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+    }
+
+    public static void resultsScreen(Component location, DisplayPanel panel) {
+        try { //Plays audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/results.wav"));
+            clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.setLoopPoints(0,clip.getFrameLength()-200000);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+        resultsScreenOpened = true;
+        JFrame resultsScreen = new JFrame("Results");
+        resultsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        resultsScreen.setSize(256, 384);
+        resultsScreen.setLocationRelativeTo(location);
+        resultsScreen.setLayout(null);
+
+        resultsScreen.add(resultsLabel("Winner: " + panel.winner(),8,0));
+        resultsScreen.add(resultsLabel("Player 1",128,0));
+        resultsScreen.add(resultsLabel("Player 2",192,0));
+        resultsScreen.add(resultsLabel("Score",8,32));
+        resultsScreen.add(resultsLabel("Deaths",8,64));
+        resultsScreen.add(resultsLabel("Bombs Placed",8,96));
+        resultsScreen.add(resultsLabel("Players Defeated",8,128));
+        resultsScreen.add(resultsLabel("Enemies Defeated",8,160));
+        resultsScreen.add(resultsLabel("Spaces Destroyed",8,192));
+        resultsScreen.add(resultsLabel("Status Effects",8,224));
+        resultsScreen.add(resultsLabel("Self Kills",8,256));
+        resultsScreen.add(resultsLabel("Spaces Walked",8,288));
+        for (int i = 0; i < 2; i++) {
+            Player player = panel.players[i];
+            int x = 128 + (64*i);
+            resultsScreen.add(resultsLabel(player.score + "",x,32));
+            resultsScreen.add(resultsLabel(10-player.lives + "",x,64));
+            resultsScreen.add(resultsLabel(player.totalBombsPlaced + "",x,96));
+            resultsScreen.add(resultsLabel(player.playersDefeated + "",x,128));
+            resultsScreen.add(resultsLabel(player.enemiesDefeated + "",x,160));
+            resultsScreen.add(resultsLabel(player.spacesDestroyed + "",x,192));
+            resultsScreen.add(resultsLabel(player.effectSpacesLandedOn + "",x,224));
+            resultsScreen.add(resultsLabel(player.selfKills + "",x,256));
+            resultsScreen.add(resultsLabel(player.spacesWalked + "",x,288));
+        }
+
+        JLabel background = new JLabel(new ImageIcon("./src/sprites/titleScreen/titleBackground.png")); //Background
+        background.setBounds(0,0,256,384);
+        resultsScreen.add(background);
+
+        resultsScreen.setVisible(true);
     }
 
     public static JButton fishButton(String text, int x, int y) {
@@ -198,5 +269,13 @@ public class Main {
         }
         button.add(label);
         return button;
+    }
+
+    public static JLabel resultsLabel(String text, int x, int y) {
+        JLabel label = new JLabel(text);
+        label.setBounds(x,y,128,64);
+        label.setFont(new Font("Little Fish", Font.PLAIN, 18));
+        label.setForeground(Color.white);
+        return label;
     }
 }

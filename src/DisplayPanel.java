@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     public static final int FRAME_LENGTH = 24;
+    private JFrame frame;
     private Clip clip;
     private int gamemode;
     public static boolean imminentVictory;
@@ -30,11 +31,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private ArrayList<Enemy> enemies;
     private int tikTok;//a variable to exam if a timer is triggered
 
-    public DisplayPanel(int gamemode) {
+    public DisplayPanel(int gamemode, JFrame frame) {
+        this.frame = frame;
         this.gamemode = gamemode;
         imminentVictory = false;
         IVMusicStarted = imminentVictory;
-        if (gamemode == 1) clock = 300;
+        if (gamemode == 1) clock = 60;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -110,9 +112,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         g.setFont(new Font("Little Fish", Font.PLAIN, 36));
         for (int i = 0; i < players.length; i++) { //Draws player info
             g.drawString("Player " + (i+1) + ":", 1096, 40+(i*512));
-            g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*512));
-            if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*512));
-            else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*512));
+            g.drawString("Health: " + players[i].health + "/" + players[i].maxHealth, 1096, 120+(i*512));
+            if (gamemode == 2) g.drawString("Lives: " + players[i].lives, 1096, 160+(i*512));
+            else g.drawString("Score: " + players[i].score, 1096, 160+(i*512));
             g.drawString("Bombs placed: " + players[i].bombsPlaced + "/" + players[i].maxBombs, 1096, 200+(i*512));
             g.drawString("Bomb size: " + players[i].bombRadius, 1096, 240+(i*512));
             g.drawString("Effects:", 1096, 280+(i*512));
@@ -207,6 +209,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void movePlayer(Player player) {
+        boolean wasOnGrid = player.isOnGrid();
         int x = player.getxMoveAmount();
         int y = player.getyMoveAmount();
         player.movePlayer(x,y); //Moves the selected player by the desired amount
@@ -245,6 +248,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 }
                 if (space.getClass() == EffectSpace.class && player.isOnGrid()) {
                     player.inflict(((EffectSpace) space).effect);
+                    player.effectSpacesLandedOn++;
                     spaces.remove(space);
                 }
                 if (space.getClass() == SpawnArea.class && ((SpawnArea) space).getPlayer() != player) { //Returns to original position when colliding with spawn area
@@ -254,6 +258,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 }
             }
         }
+        if (!wasOnGrid && player.isOnGrid()) player.spacesWalked++;
     }
 
     public void addBomb(Player player) {
@@ -266,6 +271,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         if (player.bombsPlaced < player.maxBombs) {
             bombs.add(new Bomb(player));
             player.bombsPlaced++;
+            player.totalBombsPlaced++;
         }
     }
 
@@ -308,21 +314,25 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     if (explosion.bounds.intersects(space.bounds)) //Checks all spaces to see if they are on the same space as the explosion
                         if (space.destroyable) {
                             spaces.remove(space); //Otherwise, removes the space
+                            explosion.getPlayer().spacesDestroyed++;
                             j--;
                         }
                 }
                 for (Player player : players) {
                     if (player.bounds.intersects(explosion.bounds))
-                        if (player.damage() && player != explosion.getPlayer())
-                            explosion.getPlayer().addScore();
+                        if (player.damage()) {
+                            explosion.getPlayer().playersDefeated++;
+                            if (player != explosion.getPlayer())
+                                explosion.getPlayer().addScore();
+                            else player.selfKills++;
+                        }
                 }
                 for (int j = 0; j < enemies.size(); j++) {
                     Enemy enemy = enemies.get(j);
                     if (enemy.bounds.intersects(explosion.bounds))
                         if (enemy.destroyable) {
-                            for (Player player : players) {
-                                if (player == explosion.getPlayer()) player.addScore();
-                            }
+                            explosion.getPlayer().enemiesDefeated++;
+                            explosion.getPlayer().addScore();
                             enemies.remove(enemy);
                             j--;
                         }
@@ -348,22 +358,28 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public void checkWinCondition() {
         if (gamemode == 1) {
-             if (clock <= 0)
-                System.exit(0);
-             else if (clock <= 60)
+             if (clock <= 0) {
+                 clip.stop();
+                 frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
+             }
+             else if (clock <= 30)
                  imminentVictory = true;
         }
         for (Player player : players) {
             if (gamemode == 2) {
-                 if (player.getLives() == 0)
-                    System.exit(0);
-                 else if (player.getLives() == 1)
+                 if (player.lives == 0) {
+                     clip.stop();
+                     frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
+                 }
+                 else if (player.lives == 1)
                      imminentVictory = true;
             }
             if (gamemode == 3) {
-                if (player.getScore() >= 10)
-                    System.exit(0);
-                else if (player.getScore() == 9)
+                if (player.score >= 10) {
+                    clip.stop();
+                    frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
+                }
+                else if (player.score == 9)
                     imminentVictory = true;
             }
         }
@@ -380,6 +396,29 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
             IVMusicStarted = true;
         }
+    }
+
+    public String winner() {
+        if (gamemode == 2) {
+            if (players[0].lives == players[1].lives) {
+                if (players[0].score == players[1].score) {
+                    return "Tie!";
+                } else if (players[0].score > players[1].score) {
+                    return "Player 1!";
+                } else return "Player 2!";
+            } else if (players[0].lives > players[1].lives) {
+                return "Player 1!";
+            } else return "Player 2!";
+        }
+        if (players[0].score == players[1].score) {
+            if (players[0].lives == players[1].lives) {
+                return "Tie!";
+            } else if (players[0].lives > players[1].lives) {
+                return "Player 1!";
+            } else return "Player 2!";
+        } else if (players[0].score > players[1].score) {
+            return "Player 1!";
+        } else return "Player 2!";
     }
 
     public Rectangle randomSpace() {

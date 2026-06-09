@@ -10,21 +10,26 @@ public class EffectSpace extends Space {
         super(x,y);
         collision = false;
         destroyable = true;
-        sprites = new BufferedImage[1];
+        sprites = new BufferedImage[10];
         try {
-            sprites[0] = ImageIO.read(new File("src/sprites/bubble.png"));
+            sprites[0] = ImageIO.read(new File("src/sprites/effectSpaces/invincibleStar.png"));
+            sprites[1] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[2] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[3] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[4] = ImageIO.read(new File("src/sprites/effectSpaces/speedFish.png"));
+            sprites[5] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[6] = ImageIO.read(new File("src/sprites/effectSpaces/bombUp.png"));
+            sprites[7] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[8] = ImageIO.read(new File("src/sprites/effectSpaces/heart+1.png"));
+            sprites[9] = ImageIO.read(new File("src/sprites/effectSpaces/heartFish.png"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         effect = (int) (Math.random()*Effect.effects.length);
     }
 
-    public int getEffect() {
-        return effect;
-    }
-
     @Override
     public void drawSpace(Graphics g) {
-        g.drawImage(sprites[0],bounds.x,bounds.y, null);
+        g.drawImage(sprites[effect],bounds.x,bounds.y, null);
     }
 }
