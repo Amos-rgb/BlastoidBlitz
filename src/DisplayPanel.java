@@ -117,7 +117,11 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             int k = 0;
             for (int j = 0; j < Effect.effects.length; j++) {
                 if (players[i].effects[j] > 0) {
-                    if (Effect.effects[i].stackable) g.drawString(Effect.effects[j].toString() + ": +1",1096,240+k+(i*512));
+                    if (Effect.effects[i].stackable) {
+                        if (i == 6) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].bombRadius-2),1096,240+k+(i*512));
+                        if (i == 7) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].maxBombs-2),1096,240+k+(i*512));
+                        if (i == 8) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].maxHealth-1),1096,240+k+(i*512));
+                    }
                     else g.drawString(Effect.effects[j].toString() + ": " + players[i].effects[j]*FRAME_LENGTH/1000 + "secs",1096,240+k+(i*512));
                     k += 40;
                 }
@@ -172,28 +176,27 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     private void movePlayers() {
-        int moveAmount = 64/4; //64 over the amount of frames it takes to move one space
         // player 1
         players[0].setMoveAmount(0, 0);
-        if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -moveAmount); //Up
+        if (pressedKeys[KeyEvent.VK_W]) players[0].setMoveAmount(0, -players[0].moveSpeed); //Up
 
-        if (pressedKeys[KeyEvent.VK_A]) players[0].setMoveAmount(-moveAmount, 0); //Left
+        if (pressedKeys[KeyEvent.VK_A]) players[0].setMoveAmount(-players[0].moveSpeed, 0); //Left
 
-        if (pressedKeys[KeyEvent.VK_S]) players[0].setMoveAmount(0, moveAmount); //Down
+        if (pressedKeys[KeyEvent.VK_S]) players[0].setMoveAmount(0, players[0].moveSpeed); //Down
 
-        if (pressedKeys[KeyEvent.VK_D]) players[0].setMoveAmount(moveAmount, 0); //Right
+        if (pressedKeys[KeyEvent.VK_D]) players[0].setMoveAmount(players[0].moveSpeed, 0); //Right
 
         if (pressedKeys[KeyEvent.VK_Q]) addBomb(players[0]); //Creates a bomb at the player's current location
         movePlayer(players[0]); //Moves the player according to their moveAmounts
         // player 2
         players[1].setMoveAmount(0,0);
-        if (pressedKeys[KeyEvent.VK_UP]) players[1].setMoveAmount(0, -moveAmount);
+        if (pressedKeys[KeyEvent.VK_UP]) players[1].setMoveAmount(0, -players[1].moveSpeed);
 
-        if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setMoveAmount(-moveAmount, 0);
+        if (pressedKeys[KeyEvent.VK_LEFT]) players[1].setMoveAmount(-players[1].moveSpeed, 0);
 
-        if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setMoveAmount(0, moveAmount);
+        if (pressedKeys[KeyEvent.VK_DOWN]) players[1].setMoveAmount(0, players[1].moveSpeed);
 
-        if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setMoveAmount(moveAmount, 0);
+        if (pressedKeys[KeyEvent.VK_RIGHT]) players[1].setMoveAmount(players[1].moveSpeed, 0);
 
         if (pressedKeys[KeyEvent.VK_SLASH]) addBomb(players[1]);
         movePlayer(players[1]);
@@ -347,9 +350,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     if (bounds.intersects(player.bounds)) return;
                 }
                 double rand = Math.random();
-                if (rand > 0.5)
+                if (rand > 0.99)
                     spaces.add(new Destructible(bounds.x, bounds.y));
-                else if (rand>0.25)
+                else if (rand>0.98)
                     enemies.add(new Enemy(bounds.x,bounds.y));
                 else
                     spaces.add(new EffectSpace(bounds.x,bounds.y));

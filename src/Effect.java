@@ -15,12 +15,12 @@ public class Effect {
         effects[0] = new Effect("Immunity",3*second, false);
         effects[1] = new Effect("Slippery",10*second, false);
         effects[2] = new Effect("Trapped",3*second, false);
-        effects[3] = new Effect("Minor Speed Increase",10*second, false);
-        effects[4] = new Effect("Major Speed Increase",3*second, false);
-        effects[5] = new Effect("Speed Decrease",10*second, false);
-        effects[6] = new Effect("Bomb Limit Increase",second, true);
-        effects[7] = new Effect("Bomb Radius Increase",second, true);
-        effects[8] = new Effect("Max Health Increase",second, true);
+        effects[3] = new Effect("Speed Doubled",30*second, false);
+        effects[4] = new Effect("Speed Quadrupled",10*second, false);
+        effects[5] = new Effect("Speed Halved",10*second, false);
+        effects[6] = new Effect("Bomb Limit Increase",Integer.MAX_VALUE, true);
+        effects[7] = new Effect("Bomb Radius Increase",Integer.MAX_VALUE, true);
+        effects[8] = new Effect("Max Health Increase",Integer.MAX_VALUE, true);
         effects[9] = new Effect("Healing",1, false);
         return effects;
     }

@@ -12,6 +12,7 @@ public class Player extends Space {
     int health;
     private int score;
     public int lives;
+    public int moveSpeed;
     int maxBombs;
     int bombRadius;
     int xMoveAmount;
@@ -53,6 +54,7 @@ public class Player extends Space {
         health = maxHealth;
         score = 0;
         lives = 10;
+        moveSpeed = 8;
         maxBombs = 2;
         bombRadius = 2;
         effects = new int[10];
@@ -64,6 +66,7 @@ public class Player extends Space {
             health--;
             this.inflict(0);
             if (health == 0) {
+                lives--;
                 health = maxHealth;
                 bounds.x = START_X;
                 bounds.y = START_Y;
@@ -131,6 +134,11 @@ public class Player extends Space {
     }
 
     public void inflict(int effect) {
+        if (effects[effect] == 0) {
+            if (effect == 3) moveSpeed *= 2;
+            if (effect == 4) moveSpeed *= 4;
+            if (effect == 5) moveSpeed /= 2;
+        }
         if (Effect.effects[effect].stackable) {
             if (effect == 6) maxBombs++;
             if (effect == 7) bombRadius++;
@@ -140,6 +148,9 @@ public class Player extends Space {
 
     @Override
     public void drawSpace(Graphics g) {
+        if (effects[3] == 1) moveSpeed /= 2;
+        if (effects[4] == 1) moveSpeed /= 4;
+        if (effects[5] == 1) moveSpeed *= 2;
         for (int i = 0; i < effects.length; i++) if (effects[i] > 0) effects[i]--;
         if (DisplayPanel.imminentVictory && frameWaitTime == 400/DisplayPanel.FRAME_LENGTH) frameWaitTime = 200/DisplayPanel.FRAME_LENGTH;
         if (frameCountdown == 0) {
