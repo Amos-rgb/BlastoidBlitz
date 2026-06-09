@@ -13,6 +13,7 @@ public class Player extends Space {
     private int score;
     public int lives;
     int maxBombs;
+    int bombRadius;
     int xMoveAmount;
     int yMoveAmount;
     public int[] effects;
@@ -53,6 +54,7 @@ public class Player extends Space {
         score = 0;
         lives = 10;
         maxBombs = 2;
+        bombRadius = 2;
         effects = new int[10];
         this.inflict(0);
     }
@@ -129,7 +131,11 @@ public class Player extends Space {
     }
 
     public void inflict(int effect) {
-        effects[effect] += Effect.effects[effect].frames;
+        if (Effect.effects[effect].stackable) {
+            if (effect == 6) maxBombs++;
+            if (effect == 7) bombRadius++;
+            if (effect == 8) maxHealth++;
+        } else effects[effect] += Effect.effects[effect].frames;
     }
 
     @Override

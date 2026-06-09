@@ -16,7 +16,7 @@ public class EffectSpace extends Space {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        effect = (int) (Math.random()*3);
+        effect = (int) (Math.random()*Effect.effects.length);
     }
 
     public int getEffect() {

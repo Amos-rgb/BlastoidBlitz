@@ -114,8 +114,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*512));
             else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*512));
             g.drawString("Effects:", 1096, 200+(i*512));
+            int k = 0;
             for (int j = 0; j < Effect.effects.length; j++) {
-                //if (g.drawString();
+                if (players[i].effects[j] > 0) {
+                    if (Effect.effects[i].stackable) g.drawString(Effect.effects[j].toString() + ": +1",1096,240+k+(i*512));
+                    else g.drawString(Effect.effects[j].toString() + ": " + players[i].effects[j]*FRAME_LENGTH/1000 + "secs",1096,240+k+(i*512));
+                    k += 40;
+                }
             }
         }
         g.drawString("W, A, S, D, Q", 1096, 80);
@@ -264,13 +269,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void checkBombs() {
-        int blastRadius = 2; //The amount of blocks around the bomb to destroy
         for (int i = 0; i < bombs.size(); i++) {
             Bomb bomb = bombs.get(i);
             if (!bomb.bounds.intersects(bomb.getPlayer().bounds) && !bomb.collision) bomb.collision = true;
             if (bomb.canExplode()) { //Checks all bombs to see if their countdown has finished
                 int bombX = bomb.bounds.x;
                 int bombY = bomb.bounds.y;
+                int blastRadius = bomb.getPlayer().bombRadius; //The amount of blocks around the bomb to destroy
                 for (int x = -blastRadius*64; x <= blastRadius*64; x += 64) {
                     for (int y = -blastRadius*64; y <= blastRadius*64; y += 64) {
                         boolean isSpawnArea = false;
@@ -280,7 +285,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                                 break;
                             }
                         }
-                        if (!isSpawnArea && (Math.abs(x+y) <= blastRadius*64 && Math.abs(x-y) <= blastRadius*64)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a diamond around the exploded bomb
+                        if (!isSpawnArea && (x == 0 || y == 0)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a diamond around the exploded bomb
                     }
                 }
                 bombs.remove(bomb); //Removes the exploded bomb
