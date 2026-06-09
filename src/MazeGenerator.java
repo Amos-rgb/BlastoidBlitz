@@ -90,7 +90,7 @@ public class MazeGenerator {
                 if (map[x][y] == WALL){
                     panel.spaces.add(new Indestructible(x*TILE_SIZE,y*TILE_SIZE));
                 } else if (map[x][y] == BLOCK) {
-                    panel.spaces.add(new Destructible(x*TILE_SIZE,y*TILE_SIZE));
+                    panel.addRandomObstacle(x*TILE_SIZE,y*TILE_SIZE);
                 } else if (map[x][y] == SPAWN_AREA_1) {
                     panel.spaces.add(new SpawnArea(x*TILE_SIZE,y*TILE_SIZE,panel.players[0]));
                 } else if (map[x][y] == SPAWN_AREA_2) {

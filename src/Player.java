@@ -14,6 +14,7 @@ public class Player extends Space {
     public int lives;
     public int moveSpeed;
     int maxBombs;
+    int bombsPlaced;
     int bombRadius;
     int xMoveAmount;
     int yMoveAmount;
@@ -85,7 +86,6 @@ public class Player extends Space {
 
     public int getLives() {return lives;}
 
-    public int getMaxBombs() {return maxBombs;}
 
     public void setMoveAmount(int x, int y) {
         if (isOnGrid()) {

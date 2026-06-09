@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Enemy extends Player {
+    int target;
     public Enemy(int x, int y) {
         super(x,y);
         destroyable = true;
@@ -32,6 +33,7 @@ public class Enemy extends Player {
         } catch (IOException e) {
             System.out.println(e);
         }
+        target = (int) (Math.random()*2);
     }
     public boolean randomlyMove() {
         if (isOnGrid()) {
@@ -75,16 +77,16 @@ public class Enemy extends Player {
             if (playerDistance(player) == 64) {
                 return true;
             }
-            if (playerXDistance(player) < playerYDistance(player)) {
+            if (Math.random() > 0.5) {
                 if (player.bounds.y > bounds.y) {
-                    yMoveAmount = 16;
+                    yMoveAmount = moveSpeed;
                 } else {
-                    yMoveAmount = -16;
+                    yMoveAmount = -moveSpeed;
                 }
             } else if (player.bounds.x > bounds.x) {
-                xMoveAmount = 16;
+                xMoveAmount = moveSpeed;
             } else {
-                xMoveAmount = -16;
+                xMoveAmount = -moveSpeed;
             }
         }
         return false;

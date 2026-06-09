@@ -113,16 +113,13 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             g.drawString("Health: " + players[i].getHealth() + "/" + players[i].getMaxHealth(), 1096, 120+(i*512));
             if (gamemode == 2) g.drawString("Lives: " + players[i].getLives(), 1096, 160+(i*512));
             else g.drawString("Score: " + players[i].getScore(), 1096, 160+(i*512));
-            g.drawString("Effects:", 1096, 200+(i*512));
-            int k = 0;
+            g.drawString("Bombs placed: " + players[i].bombsPlaced + "/" + players[i].maxBombs, 1096, 200+(i*512));
+            g.drawString("Bomb size: " + players[i].bombRadius, 1096, 240+(i*512));
+            g.drawString("Effects:", 1096, 280+(i*512));
+            int k = 320;
             for (int j = 0; j < Effect.effects.length; j++) {
                 if (players[i].effects[j] > 0) {
-                    if (Effect.effects[i].stackable) {
-                        if (i == 6) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].bombRadius-2),1096,240+k+(i*512));
-                        if (i == 7) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].maxBombs-2),1096,240+k+(i*512));
-                        if (i == 8) g.drawString(Effect.effects[j].toString() + ": +" + (players[i].maxHealth-1),1096,240+k+(i*512));
-                    }
-                    else g.drawString(Effect.effects[j].toString() + ": " + players[i].effects[j]*FRAME_LENGTH/1000 + "secs",1096,240+k+(i*512));
+                    if (!Effect.effects[i].stackable) g.drawString(Effect.effects[j].toString() + ": " + players[i].effects[j]*FRAME_LENGTH/1000 + "secs",1096,k+(i*512));
                     k += 40;
                 }
             }
@@ -204,10 +201,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     private void moveEnemies() {
         for (Enemy enemy : enemies) {
-            if (enemy.playerDistance(players[0]) > enemy.playerDistance(players[1]))
-                if (enemy.moveTowardsPlayer(players[1])) addBomb(enemy);
-            else
-                if (enemy.moveTowardsPlayer(players[0])) addBomb(enemy);
+            if (enemy.moveTowardsPlayer(players[enemy.target])) addBomb(enemy);
             movePlayer(enemy);
         }
     }
@@ -263,12 +257,16 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void addBomb(Player player) {
-        int playerBombs = 0;
-        for (Bomb bomb : bombs) {
-            if (bomb.bounds.intersects(player.bounds)) return; //Prevents placing multiple bombs on the same spot}
-            if (bomb.getPlayer() == player) playerBombs++;
+        for (Space space : spaces) {
+            if (player.bounds.intersects(space.bounds) && space.getClass() != SpawnArea.class) return;
         }
-        if (playerBombs < player.getMaxBombs()) bombs.add(new Bomb(player));
+        for (Bomb bomb : bombs) {
+            if (player.bounds.intersects(bomb.bounds)) return;
+        }
+        if (player.bombsPlaced < player.maxBombs) {
+            bombs.add(new Bomb(player));
+            player.bombsPlaced++;
+        }
     }
 
     public void checkBombs() {
@@ -291,6 +289,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                         if (!isSpawnArea && (x == 0 || y == 0)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a diamond around the exploded bomb
                     }
                 }
+                bomb.getPlayer().bombsPlaced--;
                 bombs.remove(bomb); //Removes the exploded bomb
             }
         }
@@ -340,22 +339,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (spaces.size() < 2000) {
                 spaceCountdown = 1000/FRAME_LENGTH;//1 sec
                 Rectangle bounds = randomSpace();
-                for (Space space : spaces) {
-                    if (bounds.intersects(space.bounds)) return;
-                }
-                for (Bomb bomb : bombs) {
-                    if (bounds.intersects(bomb.bounds)) return;
-                }
-                for (Player player : players) {
-                    if (bounds.intersects(player.bounds)) return;
-                }
-                double rand = Math.random();
-                if (rand > 0.99)
-                    spaces.add(new Destructible(bounds.x, bounds.y));
-                else if (rand>0.98)
-                    enemies.add(new Enemy(bounds.x,bounds.y));
-                else
-                    spaces.add(new EffectSpace(bounds.x,bounds.y));
+                if (overlaps(bounds)) return;
+                addRandomObstacle(bounds.x,bounds.y);
             }
         }
         spaceCountdown--;
@@ -399,5 +384,31 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public Rectangle randomSpace() {
         return new Rectangle((int) (Math.random()*17)*64, (int) (Math.random()*17)*64, 64, 64);
+    }
+
+    public void addRandomObstacle(int x, int y) {
+        double rand = Math.random();
+        if (rand > 0.1)
+            spaces.add(new Destructible(x, y));
+        else if (rand>0.09)
+            enemies.add(new Enemy(x,y));
+        else
+            spaces.add(new EffectSpace(x,y));
+    }
+
+    public boolean overlaps(Rectangle bounds) {
+        for (Space space : spaces) {
+            if (bounds.intersects(space.bounds)) return true;
+        }
+        for (Bomb bomb : bombs) {
+            if (bounds.intersects(bomb.bounds)) return true;
+        }
+        for (Player player : players) {
+            if (bounds.intersects(player.bounds)) return true;
+        }
+        for (Enemy enemy : enemies) {
+            if (bounds.intersects(enemy.bounds)) return true;
+        }
+        return false;
     }
 }
