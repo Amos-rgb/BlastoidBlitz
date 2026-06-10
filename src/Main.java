@@ -201,6 +201,8 @@ public class Main {
     }
 
     public static void resultsScreen(Component location, DisplayPanel panel) {
+        panel.clip.stop();
+        panel.timer.stop();
         try { //Plays audio
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/results.wav"));
             clip = AudioSystem.getClip();
@@ -217,10 +219,15 @@ public class Main {
         resultsScreen.setSize(256, 384);
         resultsScreen.setLocationRelativeTo(location);
         resultsScreen.setLayout(null);
-
-        resultsScreen.add(resultsLabel("Winner: " + panel.winner(),8,0));
-        resultsScreen.add(resultsLabel("Player 1",128,0));
-        resultsScreen.add(resultsLabel("Player 2",192,0));
+        JLabel label = resultsLabel("Winner: " + panel.winner(),8,0);
+        label.setForeground(Color.yellow);
+        resultsScreen.add(label);
+        JLabel player1 = resultsLabel("Player 1",128,0);
+        if (panel.winner().equals("Player 1!")) player1.setForeground(Color.yellow);
+        resultsScreen.add(player1);
+        JLabel player2 = resultsLabel("Player 2",192,0);
+        if (panel.winner().equals("Player 2!")) player2.setForeground(Color.yellow);
+        resultsScreen.add(player2);
         resultsScreen.add(resultsLabel("Score",8,32));
         resultsScreen.add(resultsLabel("Deaths",8,64));
         resultsScreen.add(resultsLabel("Bombs Placed",8,96));

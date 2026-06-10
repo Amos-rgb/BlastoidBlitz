@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DisplayPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
     public static final int FRAME_LENGTH = 24;
     private JFrame frame;
-    private Clip clip;
+    public Clip clip;
     private int gamemode;
     public static boolean imminentVictory;
     private boolean IVMusicStarted;
@@ -22,14 +22,14 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     private BufferedImage GUIBackground;
     private BufferedImage water;
     private int waterPos;
-    private Timer timer;
+    public Timer timer;
     public Player[] players;
     public ArrayList<Space> spaces;
     public int spaceCountdown;
     private ArrayList<Bomb> bombs;
     private ArrayList<Explosion> explosions;
     private ArrayList<Enemy> enemies;
-    private int tikTok;//a variable to exam if a timer is triggered
+    private ArrayList<Wormhole> wormholes;
 
     public DisplayPanel(int gamemode, JFrame frame) {
         this.frame = frame;
@@ -47,6 +47,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         bombs = new ArrayList<>();
         explosions = new ArrayList<>();
         enemies = new ArrayList<>();
+        wormholes = new ArrayList<>();
         try {
             background = ImageIO.read(new File("src/sprites/sand.png"));
             GUIBackground = ImageIO.read(new File("src/sprites/guiBackground.png"));
@@ -86,6 +87,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 g.drawImage(GUIBackground, i * 64, j * 64, null); //Draws the background as repeating tiles
             }
         }
+        for (Wormhole wormhole : wormholes) wormhole.drawSpace(g);
         for (Space space : spaces) space.drawSpace(g); //Draws all spaces
         for (Bomb bomb : bombs) bomb.drawSpace(g); //Draws all bombs
         for (Enemy enemy : enemies) enemy.drawSpace(g); //Draws all players
@@ -160,19 +162,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     @Override
     public void mouseExited(MouseEvent e) {}
-
-    public void updateGame() {
-        checkWinCondition();
-        regenerateSpaces();
-        movePlayers();
-        moveEnemies();
-        checkExplosions();
-        checkBombs();
-        repaint();
-        if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
-        else clock += FRAME_LENGTH*0.001;
-        tikTok++;
-    }
 
     private void movePlayers() {
         // player 1
@@ -256,6 +245,14 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     player.movePlayer(-x,-y);
                     return;
                 }
+            }
+        }
+        for (int i = 0; i < wormholes.size(); i++) {
+            Wormhole wormhole = wormholes.get(i);
+            if (player.bounds.intersects(wormhole.bounds)) {
+                i = (i+1)%2;
+                player.bounds = wormholes.get(i).bounds;
+                wormholes.clear();
             }
         }
         if (!wasOnGrid && player.isOnGrid()) player.spacesWalked++;
@@ -356,10 +353,31 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         spaceCountdown--;
     }
 
+    public void generateWormholes() {
+        if (wormholes.isEmpty() && Math.random() < 0.99) {
+            while (wormholes.size() < 2) {
+                Rectangle bounds = randomSpace();
+                if (!overlaps(bounds)) wormholes.add(new Wormhole(bounds.x,bounds.y));
+            }
+        }
+    }
+
+    public void updateGame() {
+        checkWinCondition();
+        regenerateSpaces();
+        generateWormholes();
+        movePlayers();
+        moveEnemies();
+        checkExplosions();
+        checkBombs();
+        repaint();
+        if (gamemode == 1) clock -= FRAME_LENGTH*0.001;
+        else clock += FRAME_LENGTH*0.001;
+    }
+
     public void checkWinCondition() {
         if (gamemode == 1) {
              if (clock <= 0) {
-                 clip.stop();
                  frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
              }
              else if (clock <= 30)
@@ -368,7 +386,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (Player player : players) {
             if (gamemode == 2) {
                  if (player.lives == 0) {
-                     clip.stop();
                      frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
                  }
                  else if (player.lives == 1)
@@ -376,7 +393,6 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
             if (gamemode == 3) {
                 if (player.score >= 10) {
-                    clip.stop();
                     frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
                 }
                 else if (player.score == 9)

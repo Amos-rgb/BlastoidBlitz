@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Player extends Space {
     private final int START_X;
@@ -132,6 +133,9 @@ public class Player extends Space {
     }
 
     public void inflict(int effect) {
+        if (effect == 9) {
+            Arrays.fill(effects, 0);
+        }
         if (effects[effect] == 0) {
             if (effect == 3) moveSpeed *= 2;
             if (effect == 4) moveSpeed *= 4;

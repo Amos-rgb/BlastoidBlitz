@@ -12,7 +12,7 @@ public class Effect {
     private static Effect[] effects() {
         int second = 1000/DisplayPanel.FRAME_LENGTH;
         Effect[] effects = new Effect[10];
-        effects[0] = new Effect("Immunity",3*second, false);
+        effects[0] = new Effect("Invincibility",3*second, false);
         effects[1] = new Effect("Slippery",10*second, false);
         effects[2] = new Effect("Trapped",3*second, false);
         effects[3] = new Effect("Speed Doubled",30*second, false);
