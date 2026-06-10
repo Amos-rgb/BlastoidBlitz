@@ -37,7 +37,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         this.gamemode = gamemode;
         imminentVictory = false;
         IVMusicStarted = imminentVictory;
-        if (gamemode == 1) clock = 60;
+        if (gamemode == 1) clock = 300;
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
@@ -66,10 +66,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/battleTheme.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
-            clip.setLoopPoints(clip.getFrameLength()/9,clip.getFrameLength()-50000);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
             FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             volume.setValue(-10.0f);
+            clip.setLoopPoints(clip.getFrameLength()/9,clip.getFrameLength()-50000);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
@@ -239,6 +239,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     return;
                 }
                 if (space.getClass() == EffectSpace.class && player.isOnGrid()) {
+                    playSoundEffect("src/sfx/effectSpace.wav");
                     player.inflict(((EffectSpace) space).effect);
                     player.effectSpacesLandedOn++;
                     spaces.remove(space);
@@ -302,6 +303,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                         if (!isSpawnArea && (x == 0 || y == 0)) explosions.add(new Explosion(bombX+x,bombY+y, bomb.getPlayer())); //Creates explosions in a diamond around the exploded bomb
                     }
                 }
+                playSoundEffect("src/sfx/explosion.wav");
                 bomb.getPlayer().bombsPlaced--;
                 bombs.remove(bomb); //Removes the exploded bomb
             }
@@ -328,6 +330,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 for (Player player : players) {
                     if (player.bounds.intersects(explosion.bounds))
                         if (player.damage()) {
+                            playSoundEffect("src/sfx/player.wav");
                             explosion.getPlayer().playersDefeated++;
                             if (player != explosion.getPlayer())
                                 explosion.getPlayer().addScore();
@@ -338,6 +341,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     Enemy enemy = enemies.get(j);
                     if (enemy.bounds.intersects(explosion.bounds))
                         if (enemy.destroyable) {
+                            playSoundEffect("src/sfx/starfish.wav");
                             explosion.getPlayer().enemiesDefeated++;
                             explosion.getPlayer().addScore();
                             enemies.remove(enemy);
@@ -415,6 +419,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                 AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/imminentVictory.wav"));
                 clip = AudioSystem.getClip();
                 clip.open(audio);
+                FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                volume.setValue(-10.0f);
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
                 clip.start();
             } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
@@ -455,8 +461,10 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         double rand = Math.random();
         if (rand > 0.1)
             spaces.add(new Destructible(x, y));
-        else if (rand>0.09)
+        else if (rand>0.09) {
             enemies.add(new Enemy(x,y));
+            playSoundEffect("src/sfx/starfish.wav");
+        }
         else
             spaces.add(new EffectSpace(x,y));
     }
@@ -486,7 +494,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             sfxClip = AudioSystem.getClip();
             sfxClip.open(audio);
             FloatControl volume = (FloatControl) sfxClip.getControl(FloatControl.Type.MASTER_GAIN);
-            volume.setValue(-10.0f);
+            volume.setValue(-5.0f);
             sfxClip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());

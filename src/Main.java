@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     static Clip clip;
+    static Clip sfxClip;
     static boolean resultsScreenOpened;
     public static void main(String[] args) {
         resultsScreenOpened = false;
@@ -40,9 +41,11 @@ public class Main {
         titleScreen.setLayout(null);
         titleScreen.add(new JButton());
         JButton titleCard = new JButton(new ImageIcon("./src/sprites/titleScreen/title.png")); //Title card
-        titleCard.addActionListener(e -> titleScreen(titleScreen));
-        titleCard.addActionListener(e -> titleScreen.dispose());
-        titleCard.addActionListener(e -> playSoundEffect("src/sfx/gameStart.wav"));
+        titleCard.addActionListener(e -> {
+            titleScreen(titleScreen);
+            titleScreen.dispose();
+            playSoundEffect("src/sfx/menuSelect.wav");
+        });
         titleCard.setBorderPainted(false);
         titleCard.setContentAreaFilled(false);
         titleCard.setBounds(0,0,256,128);
@@ -210,6 +213,8 @@ public class Main {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/results.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
+            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volume.setValue(-10.0f);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.setLoopPoints(0,clip.getFrameLength()-200000);
             clip.start();
@@ -219,7 +224,7 @@ public class Main {
         resultsScreenOpened = true;
         JFrame resultsScreen = new JFrame("Results");
         resultsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        resultsScreen.setSize(256, 384);
+        resultsScreen.setSize(256, 416);
         resultsScreen.setLocationRelativeTo(location);
         resultsScreen.setLayout(null);
         JLabel label = resultsLabel("Winner: " + panel.winner(),8,0);
@@ -267,6 +272,7 @@ public class Main {
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setLayout(null);
+        button.addActionListener(e -> playSoundEffect("src/sfx/menuSelect.wav"));
         JLabel label = new JLabel(text);
         label.setFont(new Font("Little Fish", Font.PLAIN, 14));
         label.setForeground(Color.BLACK);
@@ -292,11 +298,11 @@ public class Main {
     public static void playSoundEffect(String fileName) {
         try { //Plays audio
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File(fileName));
-            clip = AudioSystem.getClip();
-            clip.open(audio);
-            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            sfxClip = AudioSystem.getClip();
+            sfxClip.open(audio);
+            FloatControl volume = (FloatControl) sfxClip.getControl(FloatControl.Type.MASTER_GAIN);
             volume.setValue(-10.0f);
-            clip.start();
+            sfxClip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
         }
