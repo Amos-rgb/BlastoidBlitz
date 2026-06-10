@@ -15,6 +15,8 @@ public class Main {
             AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/soundtrack/titleScreen.wav"));
             clip = AudioSystem.getClip();
             clip.open(audio);
+            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volume.setValue(-10.0f);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.setLoopPoints(0,clip.getFrameLength()-70000);
             clip.start();
@@ -40,6 +42,7 @@ public class Main {
         JButton titleCard = new JButton(new ImageIcon("./src/sprites/titleScreen/title.png")); //Title card
         titleCard.addActionListener(e -> titleScreen(titleScreen));
         titleCard.addActionListener(e -> titleScreen.dispose());
+        titleCard.addActionListener(e -> playSoundEffect("src/sfx/gameStart.wav"));
         titleCard.setBorderPainted(false);
         titleCard.setContentAreaFilled(false);
         titleCard.setBounds(0,0,256,128);
@@ -284,5 +287,18 @@ public class Main {
         label.setFont(new Font("Little Fish", Font.PLAIN, 18));
         label.setForeground(Color.white);
         return label;
+    }
+
+    public static void playSoundEffect(String fileName) {
+        try { //Plays audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(fileName));
+            clip = AudioSystem.getClip();
+            clip.open(audio);
+            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volume.setValue(-10.0f);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

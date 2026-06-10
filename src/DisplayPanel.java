@@ -13,6 +13,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     public static final int FRAME_LENGTH = 24;
     private JFrame frame;
     public Clip clip;
+    private Clip sfxClip;
     private int gamemode;
     public static boolean imminentVictory;
     private boolean IVMusicStarted;
@@ -67,6 +68,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             clip.open(audio);
             clip.setLoopPoints(clip.getFrameLength()/9,clip.getFrameLength()-50000);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
+            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volume.setValue(-10.0f);
             clip.start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.out.println(e.getMessage());
@@ -250,6 +253,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         for (int i = 0; i < wormholes.size(); i++) {
             Wormhole wormhole = wormholes.get(i);
             if (player.bounds.intersects(wormhole.bounds)) {
+                playSoundEffect("src/sfx/wormhole.wav");
                 i = (i+1)%2;
                 player.bounds = wormholes.get(i).bounds;
                 wormholes.clear();
@@ -266,6 +270,12 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (player.bounds.intersects(bomb.bounds)) return;
         }
         if (player.bombsPlaced < player.maxBombs) {
+            try { //Plays audio
+                AudioInputStream audio = AudioSystem.getAudioInputStream(new File("src/sfx/bomb.wav"));
+                sfxClip = AudioSystem.getClip();
+                sfxClip.open(audio);
+                sfxClip.start();
+            } catch (UnsupportedAudioFileException | LineUnavailableException | IOException _) {}
             bombs.add(new Bomb(player));
             player.bombsPlaced++;
             player.totalBombsPlaced++;
@@ -452,6 +462,9 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public boolean overlaps(Rectangle bounds) {
+        for (Wormhole wormhole : wormholes) {
+            if (bounds.intersects(wormhole.bounds)) return true;
+        }
         for (Space space : spaces) {
             if (bounds.intersects(space.bounds)) return true;
         }
@@ -465,5 +478,18 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             if (bounds.intersects(enemy.bounds)) return true;
         }
         return false;
+    }
+
+    public void playSoundEffect(String fileName) {
+        try { //Plays audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(fileName));
+            sfxClip = AudioSystem.getClip();
+            sfxClip.open(audio);
+            FloatControl volume = (FloatControl) sfxClip.getControl(FloatControl.Type.MASTER_GAIN);
+            volume.setValue(-10.0f);
+            sfxClip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

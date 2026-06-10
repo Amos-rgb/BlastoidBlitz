@@ -10,6 +10,8 @@ public class Wormhole extends Space {
         collision = false;
         destroyable = false;
         sprites = new BufferedImage[10];
+        frameWaitTime /= 2;
+        frameCountdown = frameWaitTime;
         try {
             for (int i = 0; i < 10; i++) {
                 sprites[i] = ImageIO.read(new File("src/sprites/coral/coral" + i + ".png"));
