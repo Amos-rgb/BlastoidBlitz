@@ -106,7 +106,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
             }
         }
         if (imminentVictory) waterPos += 2;
-        else waterPos++;
+        else waterPos += (int) (Math.random()*3);
         waterPos%=64;
 
         g2d.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 1f ));

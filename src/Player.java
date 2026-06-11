@@ -72,6 +72,10 @@ public class Player extends Space {
             health--;
             effects[0] = Effect.second*3;
             if (health == 0) {
+                for (int i = 0; i < effects.length; i++) if (effects[i] > 1) effects[i] = 1;
+                maxHealth = 1;
+                bombRadius = 2;
+                maxBombs = 2;
                 lives--;
                 health = maxHealth;
                 bounds.x = START_X;
