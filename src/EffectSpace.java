@@ -13,13 +13,13 @@ public class EffectSpace extends Space {
         sprites = new BufferedImage[10];
         try {
             sprites[0] = ImageIO.read(new File("src/sprites/effectSpaces/invincibleStar.png"));
-            sprites[1] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[1] = ImageIO.read(new File("src/sprites/effectSpaces/seaweed.png"));
             sprites[2] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
-            sprites[3] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[3] = ImageIO.read(new File("src/sprites/effectSpaces/jellyfish.png"));
             sprites[4] = ImageIO.read(new File("src/sprites/effectSpaces/speedFish.png"));
-            sprites[5] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[5] = ImageIO.read(new File("src/sprites/effectSpaces/slownessFish.png"));
             sprites[6] = ImageIO.read(new File("src/sprites/effectSpaces/bombUp.png"));
-            sprites[7] = ImageIO.read(new File("src/sprites/effectSpaces/bubble.png"));
+            sprites[7] = ImageIO.read(new File("src/sprites/effectSpaces/bombRangeUp.png"));
             sprites[8] = ImageIO.read(new File("src/sprites/effectSpaces/heart+1.png"));
             sprites[9] = ImageIO.read(new File("src/sprites/effectSpaces/heartFish.png"));
         } catch (IOException e) {

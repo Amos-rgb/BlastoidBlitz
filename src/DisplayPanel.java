@@ -41,8 +41,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
         else clock = 0;
         pressedKeys = new boolean[128];
         players = new Player[2];
-        players[0] = new Player(64,64); //Creates player 1 in the upper left corner
-        players[1] = new Player(960,960); //Creates player 2 in the lower right corner
+        players[0] = new Player(64,64,1); //Creates player 1 in the upper left corner
+        players[1] = new Player(960,960,2); //Creates player 2 in the lower right corner
         spaces = new ArrayList<>();
         spaceCountdown = 0;
         bombs = new ArrayList<>();

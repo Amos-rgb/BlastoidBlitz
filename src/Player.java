@@ -26,34 +26,32 @@ public class Player extends Space {
     int effectSpacesLandedOn;
     int selfKills;
     int spacesWalked;
-    public Player(int x, int y) {
+    int playerNum;
+    public Player(int x, int y, int playerNum) {
         super(x,y);
         START_X = x;
         START_Y = y;
+        this.playerNum = playerNum;
         collision = true;
         destroyable = false;
         sprites = new BufferedImage[20];
         try {
-            sprites[0] = ImageIO.read(new File("src/sprites/starfish/starfishUp1.png"));
-            sprites[1] = ImageIO.read(new File("src/sprites/starfish/starfishRight1.png"));
-            sprites[2] = ImageIO.read(new File("src/sprites/starfish/starfishDown1.png"));
-            sprites[3] = ImageIO.read(new File("src/sprites/starfish/starfishLeft1.png"));
-            for (int i = 0; i < 3; i++) {
-                sprites[i+4] = ImageIO.read(new File("src/sprites/starfish/starfishUp" + i + ".png"));
+
+            for (int i = 0; i < 4; i++) {
+                sprites[i] = ImageIO.read(new File("src/sprites/player" + playerNum + "/player" + playerNum + "Neutral" + i + ".png"));
             }
-            sprites[7] = ImageIO.read(new File("src/sprites/starfish/starfishUp1.png"));
-            for (int i = 0; i < 3; i++) {
-                sprites[i+8] = ImageIO.read(new File("src/sprites/starfish/starfishLeft" + i + ".png"));
+            for (int i = 0; i < 4; i++) {
+                sprites[i+4] = ImageIO.read(new File("src/sprites/player" + playerNum + "/player" + playerNum + "Up" + i + ".png"));
             }
-            sprites[11] = ImageIO.read(new File("src/sprites/starfish/starfishLeft1.png"));
-            for (int i = 0; i < 3; i++) {
-                sprites[i+12] = ImageIO.read(new File("src/sprites/starfish/starfishRight" + i + ".png"));
+            for (int i = 0; i < 4; i++) {
+                sprites[i+8] = ImageIO.read(new File("src/sprites/player" + playerNum + "/player" + playerNum + "Left" + i + ".png"));
             }
-            sprites[15] = ImageIO.read(new File("src/sprites/starfish/starfishRight1.png"));
-            for (int i = 0; i < 3; i++) {
-                sprites[i+16] = ImageIO.read(new File("src/sprites/starfish/starfishDown" + i + ".png"));
+            for (int i = 0; i < 4; i++) {
+                sprites[i+12] = ImageIO.read(new File("src/sprites/player" + playerNum + "/player" + playerNum + "Right" + i + ".png"));
             }
-            sprites[19] = ImageIO.read(new File("src/sprites/starfish/starfishDown1.png"));
+            for (int i = 0; i < 4; i++) {
+                sprites[i+16] = ImageIO.read(new File("src/sprites/player" + playerNum + "/player" + playerNum + "Down" + i + ".png"));
+            }
         } catch (IOException e) {
             System.out.println(e);
         }
