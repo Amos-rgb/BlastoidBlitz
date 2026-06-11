@@ -295,7 +295,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
                     for (int y = -blastRadius*64; y <= blastRadius*64; y += 64) {
                         boolean isSpawnArea = false;
                         for (Space space : spaces) {
-                            if (space.bounds.x == bombX + x && space.bounds.y == bombY + y && space.getClass() == SpawnArea.class) {
+                            if (space.bounds.x == bombX + x && space.bounds.y == bombY + y && (space.getClass() == SpawnArea.class || space.getClass() == Indestructible.class)) {
                                 isSpawnArea = true; //If the space is a spawn area, does not create explosion
                                 break;
                             }
@@ -357,8 +357,8 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
 
     public void regenerateSpaces() {
         if (spaceCountdown <= 0) {
-            if (spaces.size() < 2000) {
-                spaceCountdown = 1000/FRAME_LENGTH;//1 sec
+            if (spaces.size() < 200) {
+                spaceCountdown = 750/FRAME_LENGTH;//1 sec
                 Rectangle bounds = randomSpace();
                 if (overlaps(bounds)) return;
                 addRandomObstacle(bounds.x,bounds.y);

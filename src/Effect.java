@@ -3,6 +3,7 @@ public class Effect {
     public String effectName;
     public int frames;
     public boolean stackable;
+    public final static int second = 1000/DisplayPanel.FRAME_LENGTH;
     public Effect(String effectName, int frames, boolean stackable) {
         this.effectName = effectName;
         this.frames = frames;
@@ -10,9 +11,8 @@ public class Effect {
     }
 
     private static Effect[] effects() {
-        int second = 1000/DisplayPanel.FRAME_LENGTH;
         Effect[] effects = new Effect[10];
-        effects[0] = new Effect("Invincibility",3*second, false);
+        effects[0] = new Effect("Invincibility",10*second, false);
         effects[1] = new Effect("Slippery",10*second, false);
         effects[2] = new Effect("Trapped",3*second, false);
         effects[3] = new Effect("Speed Doubled",30*second, false);
@@ -21,7 +21,7 @@ public class Effect {
         effects[6] = new Effect("Bomb Limit Increase",Integer.MAX_VALUE, true);
         effects[7] = new Effect("Bomb Radius Increase",Integer.MAX_VALUE, true);
         effects[8] = new Effect("Max Health Increase",Integer.MAX_VALUE, true);
-        effects[9] = new Effect("Healing",1, false);
+        effects[9] = new Effect("Healing",second, false);
         return effects;
     }
 

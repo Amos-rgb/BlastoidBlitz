@@ -70,7 +70,7 @@ public class Player extends Space {
     public boolean damage() { //If the player does not have immunity, decreases the player's health by 1 and sends them back to their initial spawnpoint if health is 0, returns whether they were downed
         if (effects[0] == 0) {
             health--;
-            this.inflict(0);
+            effects[0] = Effect.second*3;
             if (health == 0) {
                 lives--;
                 health = maxHealth;
