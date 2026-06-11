@@ -224,7 +224,7 @@ public class Main {
         resultsScreenOpened = true;
         JFrame resultsScreen = new JFrame("Results");
         resultsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        resultsScreen.setSize(256, 416);
+        resultsScreen.setSize(256, 384);
         resultsScreen.setLocationRelativeTo(location);
         resultsScreen.setLayout(null);
         JLabel label = resultsLabel("Winner: " + panel.winner(),8,0);

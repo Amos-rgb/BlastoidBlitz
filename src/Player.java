@@ -135,6 +135,7 @@ public class Player extends Space {
     public void inflict(int effect) {
         if (effect == 9) {
             for (int i = 0; i < effects.length; i++) if (effects[i] > 1) effects[i] = 1;
+            health = maxHealth;
         }
         if (effects[effect] == 0) {
             if (effect == 3) moveSpeed *= 2;
