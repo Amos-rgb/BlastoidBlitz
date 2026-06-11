@@ -368,7 +368,7 @@ public class DisplayPanel extends JPanel implements MouseListener, KeyListener, 
     }
 
     public void generateWormholes() {
-        if (wormholes.isEmpty() && Math.random() < 0.99) {
+        if (wormholes.isEmpty() && Math.random() < 0.001) {
             while (wormholes.size() < 2) {
                 Rectangle bounds = randomSpace();
                 if (!overlaps(bounds)) wormholes.add(new Wormhole(bounds.x,bounds.y));

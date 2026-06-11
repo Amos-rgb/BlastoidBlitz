@@ -242,7 +242,7 @@ public class Main {
         resultsScreen.add(resultsLabel("Players Defeated",8,128));
         resultsScreen.add(resultsLabel("Enemies Defeated",8,160));
         resultsScreen.add(resultsLabel("Spaces Destroyed",8,192));
-        resultsScreen.add(resultsLabel("Status Effects",8,224));
+        resultsScreen.add(resultsLabel("Effects Gained",8,224));
         resultsScreen.add(resultsLabel("Self Kills",8,256));
         resultsScreen.add(resultsLabel("Spaces Walked",8,288));
         for (int i = 0; i < 2; i++) {

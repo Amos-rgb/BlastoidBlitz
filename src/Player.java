@@ -81,8 +81,8 @@ public class Player extends Space {
         }
         return false;
     }
-    public void addScore() {score++;} //Adds 1 to the player's score
 
+    public void addScore() {score++;} //Adds 1 to the player's score
 
     public void setMoveAmount(int x, int y) {
         if (isOnGrid()) {

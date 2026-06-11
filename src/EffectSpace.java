@@ -26,6 +26,8 @@ public class EffectSpace extends Space {
             System.out.println(e.getMessage());
         }
         effect = (int) (Math.random()*Effect.effects.length);
+        if (Math.random() > 0.8) effect = (int) (Math.random()*4) + 6; //20% chance it will be forced to be a permanent buff/heart fish
+
     }
 
     @Override
